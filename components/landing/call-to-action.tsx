@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 
 const CallToActionBanner: React.FC = () => (
-  <section className="bg-[#004f64] rounded-3xl p-8 md:p-16 flex flex-col md:flex-row items-center justify-between my-16 shadow-md">
+  <section className="bg-[#004f64] rounded-3xl p-8 md:p-16 flex flex-col md:flex-row items-center justify-between my-16 shadow-md" id="call-to-action">
     <div className="flex-1 md:pr-12">
       <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
         Join Rwanda’s Smartest Trading Platform

@@ -75,7 +75,7 @@ const Hero: React.FC = () => {
   }, [current]);
 
   return (
-    <section className="relative h-[calc(100vh-5rem)] mt-1 overflow-hidden mb-16 shadow-md">
+    <section className="relative h-[calc(100vh-5rem)] mt-1 overflow-hidden mb-16 shadow-md" id="home">
       {/* Slideshow at bottom layer */}
       <div className="absolute inset-0 z-0 flex items-center justify-end bg-white">
         {images.map((img, idx) => (

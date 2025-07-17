@@ -1,7 +1,7 @@
 import React from "react";
 
 const Footer: React.FC = () => (
-  <footer className="bg-white pt-12 mt-32 shadow-[0_-6px_12px_-6px_rgba(0,0,0,0.1)]">
+  <footer className="bg-white pt-12 mt-32 shadow-[0_-6px_12px_-6px_rgba(0,0,0,0.1)]" id="about-us">
     <div className="grid max-sm:grid-cols-1 px-4 sm:px-10 max-lg:grid-cols-2 lg:grid-cols-5 lg:gap-14 max-lg:gap-8">
       <div className="lg:col-span-2">
         <h4 className="text-xl font-semibold mb-6 text-[#004f64]">About Us</h4>

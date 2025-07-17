@@ -4,9 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaTimes, FaBars } from "react-icons/fa";
 import { MdOutlineAccountCircle } from "react-icons/md";
-import { RiArrowDropDownLine } from "react-icons/ri";
 import { CiSearch } from "react-icons/ci";
 import NavigationLinks from "@/components/landing/nav-links";
+import LanguageDropdown from "@/components/dropdowns/language-dropdown";
 const navLinks = ["Services", "Market", "Partners", "About us"];
 
 const Header: React.FC = () => {
@@ -36,10 +36,9 @@ const Header: React.FC = () => {
             <button className="text-gray-700 font-medium px-4 py-2 rounded transition hover:text-green-700">
                 <CiSearch size={25} className="inline-block mr-2" />
             </button>
-            <button className="text-gray-700 font-medium px-4 py-2 rounded transition hover:text-green-700">
-                English
-                <RiArrowDropDownLine size={20} className="inline-block ml-1" />
-            </button>
+            
+            <LanguageDropdown />
+
             <Link href="/sign-in" className="px-6 py-2 rounded-full bg-gradient-to-r from-[#2d94b0] to-[#004f64] text-white font-semibold shadow cursor-pointer transition">
                 <MdOutlineAccountCircle size={ 20 } className="inline-block mr-2" />
                 Sign in

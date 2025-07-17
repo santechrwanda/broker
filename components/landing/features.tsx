@@ -43,7 +43,7 @@ const features = [
 
 const Features: React.FC = () => {
     return (
-        <section className="my-32 max-w-7xl px-4 mx-auto">
+        <section className="my-32 max-w-7xl px-4 mx-auto" id="services">
             <div className="mb-16 max-w-2xl text-center mx-auto">
                 <h2 className="md:text-4xl text-[#004f64] text-3xl font-extrabold mb-6">What Makes Us Different</h2>
                 <p className="mt-6 text-gray-600">
