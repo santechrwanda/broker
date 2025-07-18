@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
     return (
         <section className="absolute flex flex-col justify-between w-full top-0 min-h-screen">

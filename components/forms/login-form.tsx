@@ -1,13 +1,13 @@
 "use client";
 
-import Link from 'next/link';
-import React, { useState } from 'react'
-import { FcGoogle } from 'react-icons/fc';
+import Link from "next/link";
+import React, { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [remember, setRemember] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
@@ -16,18 +16,19 @@ const LoginForm = () => {
         e.preventDefault();
         setError(null);
 
-        if(email && password)
-            router.push('/dashboard');
+        if (email && password) router.push("/dashboard");
     };
 
     return (
         <div className="container mx-auto px-4 h-full">
             <div className="flex content-center items-center justify-center h-full">
-                <div className="w-full lg:w-5/12 px-4 pt-3">
+                <div className="w-full lg:w-[37%] px-4 pt-3">
                     <div className="relative flex flex-col min-w-0 break-words w-full shadow-lg rounded-lg bg-white border-0">
                         <div className="rounded-t mb-0 px-6 py-6">
                             <div className="text-center mb-3">
-                                <h6 className="text-gray-600 text-sm font-bold">Sign in with</h6>
+                                <h6 className="text-gray-600 text-sm font-bold">
+                                    Sign in with
+                                </h6>
                             </div>
                             <div className="btn-wrapper text-center">
                                 <button
@@ -48,8 +49,13 @@ const LoginForm = () => {
                             </div>
                             {error && (
                                 <div className="mb-4">
-                                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative text-center" role="alert">
-                                        <span className="block sm:inline">{error}</span>
+                                    <div
+                                        className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative text-center"
+                                        role="alert"
+                                    >
+                                        <span className="block sm:inline">
+                                            {error}
+                                        </span>
                                     </div>
                                 </div>
                             )}
@@ -63,7 +69,9 @@ const LoginForm = () => {
                                         className="px-3 py-3 placeholder-gray-400 text-gray-700 rounded text-sm shadow focus:outline-none border border-gray-500/30 focus:shadow-outline w-full"
                                         placeholder="Email"
                                         value={email}
-                                        onChange={e => setEmail(e.target.value)}
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
                                         required
                                     />
                                 </div>
@@ -76,7 +84,9 @@ const LoginForm = () => {
                                         className="px-3 py-3 placeholder-gray-400 text-gray-700 border border-gray-500/30 rounded text-sm shadow focus:outline-none focus:shadow-outline w-full"
                                         placeholder="Password"
                                         value={password}
-                                        onChange={e => setPassword(e.target.value)}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
+                                        }
                                         required
                                     />
                                 </div>
@@ -87,14 +97,19 @@ const LoginForm = () => {
                                             type="checkbox"
                                             className="form-checkbox text-gray-800 ml-1 w-5 h-5"
                                             checked={remember}
-                                            onChange={e => setRemember(e.target.checked)}
+                                            onChange={(e) =>
+                                                setRemember(e.target.checked)
+                                            }
                                         />
                                         <span className="ml-2 text-sm font-semibold text-gray-700">
                                             Remember me
                                         </span>
                                     </label>
                                     <div className="w-1/2 text-right">
-                                        <Link href="/forgot-password" className="text-[#004f64] hover:underline">
+                                        <Link
+                                            href="/forgot-password"
+                                            className="text-[#004f64] hover:underline"
+                                        >
                                             Forgot password?
                                         </Link>
                                     </div>
@@ -110,7 +125,10 @@ const LoginForm = () => {
 
                                 <div className="mt-3 flex gap-x-2">
                                     Don&apos; Have an account?
-                                    <Link href="sign-up" className="text-[#004f64] hover:underline">
+                                    <Link
+                                        href="sign-up"
+                                        className="text-[#004f64] hover:underline"
+                                    >
                                         Create new account
                                     </Link>
                                 </div>
@@ -120,7 +138,7 @@ const LoginForm = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default LoginForm
+export default LoginForm;

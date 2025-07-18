@@ -1,12 +1,12 @@
 "use client";
-import Link from 'next/link'
-import React, { useState } from 'react'
-import { FcGoogle } from 'react-icons/fc';
+import Link from "next/link";
+import React, { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 
 const SignupForm = () => {
-    const [email, setEmail] = useState('');
-    const [names, setNames] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState("");
+    const [names, setNames] = useState("");
+    const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -17,11 +17,13 @@ const SignupForm = () => {
     return (
         <div className="container mx-auto px-4 h-full">
             <div className="flex content-center items-center justify-center h-full">
-                <div className="w-full lg:w-5/12 px-4 pt-3">
+                <div className="w-full lg:w-[37%] px-4 pt-3">
                     <div className="relative flex flex-col min-w-0 break-words w-full shadow-lg rounded-lg bg-white border-0">
                         <div className="rounded-t mb-0 px-6 py-6">
                             <div className="text-center mb-3">
-                                <h6 className="text-gray-600 text-sm font-bold">Sign up with</h6>
+                                <h6 className="text-gray-600 text-sm font-bold">
+                                    Sign up with
+                                </h6>
                             </div>
                             <div className="btn-wrapper text-center">
                                 <button
@@ -42,8 +44,13 @@ const SignupForm = () => {
                             </div>
                             {error && (
                                 <div className="mb-4">
-                                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative text-center" role="alert">
-                                        <span className="block sm:inline">{error}</span>
+                                    <div
+                                        className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative text-center"
+                                        role="alert"
+                                    >
+                                        <span className="block sm:inline">
+                                            {error}
+                                        </span>
                                     </div>
                                 </div>
                             )}
@@ -54,11 +61,13 @@ const SignupForm = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        maxLength={ 100 }
+                                        maxLength={100}
                                         className="px-3 py-3 placeholder-gray-400 text-gray-700 rounded text-sm shadow focus:outline-none border border-gray-500/30 focus:shadow-outline w-full"
                                         placeholder="Joe Doe"
                                         value={names}
-                                        onChange={e => setNames(e.target.value)}
+                                        onChange={(e) =>
+                                            setNames(e.target.value)
+                                        }
                                         required
                                     />
                                 </div>
@@ -71,7 +80,9 @@ const SignupForm = () => {
                                         className="px-3 py-3 placeholder-gray-400 text-gray-700 rounded text-sm shadow focus:outline-none border border-gray-500/30 focus:shadow-outline w-full"
                                         placeholder="Email"
                                         value={email}
-                                        onChange={e => setEmail(e.target.value)}
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
                                         required
                                     />
                                 </div>
@@ -84,7 +95,9 @@ const SignupForm = () => {
                                         className="px-3 py-3 placeholder-gray-400 text-gray-700 border border-gray-500/30 rounded text-sm shadow focus:outline-none focus:shadow-outline w-full"
                                         placeholder="Password"
                                         value={password}
-                                        onChange={e => setPassword(e.target.value)}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
+                                        }
                                         required
                                     />
                                 </div>
@@ -99,7 +112,10 @@ const SignupForm = () => {
 
                                 <div className="mt-3 flex gap-x-2">
                                     Have an account?
-                                    <Link href="/sign-in" className="text-[#004f64] hover:underline">
+                                    <Link
+                                        href="/sign-in"
+                                        className="text-[#004f64] hover:underline"
+                                    >
                                         Login here
                                     </Link>
                                 </div>
@@ -109,7 +125,7 @@ const SignupForm = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default SignupForm
+export default SignupForm;

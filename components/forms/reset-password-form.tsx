@@ -1,10 +1,10 @@
 "use client";
-import Link from 'next/link';
-import React, { useState } from 'react';
+import Link from "next/link";
+import React, { useState } from "react";
 
 const ResetPasswordForm = () => {
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -25,8 +25,12 @@ const ResetPasswordForm = () => {
                     <div className="relative flex flex-col min-w-0 break-words w-full shadow-lg rounded-lg bg-white border-0">
                         <div className="rounded-t mb-0 px-6 py-6">
                             <div className="text-center mb-3">
-                                <h6 className="text-[#004f64] text-lg font-bold">Reset Password</h6>
-                                <p className="text-gray-500 text-sm mt-2">Enter your new password below.</p>
+                                <h6 className="text-[#004f64] text-lg font-bold">
+                                    Reset Password
+                                </h6>
+                                <p className="text-gray-500 text-sm mt-2">
+                                    Enter your new password below.
+                                </p>
                             </div>
                         </div>
                         <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
@@ -50,7 +54,9 @@ const ResetPasswordForm = () => {
                                         className="px-3 py-3 placeholder-gray-400 text-gray-700 border border-gray-500/30 rounded text-sm shadow focus:outline-none focus:shadow-outline w-full"
                                         placeholder="New Password"
                                         value={password}
-                                        onChange={e => setPassword(e.target.value)}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
+                                        }
                                         required
                                     />
                                 </div>
@@ -63,7 +69,9 @@ const ResetPasswordForm = () => {
                                         className="px-3 py-3 placeholder-gray-400 text-gray-700 border border-gray-500/30 rounded text-sm shadow focus:outline-none focus:shadow-outline w-full"
                                         placeholder="Confirm Password"
                                         value={confirmPassword}
-                                        onChange={e => setConfirmPassword(e.target.value)}
+                                        onChange={(e) =>
+                                            setConfirmPassword(e.target.value)
+                                        }
                                         required
                                     />
                                 </div>
@@ -76,7 +84,10 @@ const ResetPasswordForm = () => {
                                     </button>
                                 </div>
                                 <div className="mt-3 flex gap-x-2 justify-center">
-                                    <Link href="/sign-in" className="text-[#004f64] hover:underline">
+                                    <Link
+                                        href="/sign-in"
+                                        className="text-[#004f64] hover:underline"
+                                    >
                                         Back to Sign In
                                     </Link>
                                 </div>
@@ -89,4 +100,4 @@ const ResetPasswordForm = () => {
     );
 };
 
-export default ResetPasswordForm; 
+export default ResetPasswordForm;

@@ -1,5 +1,5 @@
-import ResetPasswordForm from '@/components/forms/reset-password-form';
-import React from 'react';
+import ResetPasswordForm from "@/components/forms/reset-password-form";
+import React from "react";
 
 const ResetPasswordPage = () => {
     return (
@@ -10,4 +10,4 @@ const ResetPasswordPage = () => {
     );
 };
 
-export default ResetPasswordPage; 
+export default ResetPasswordPage;
