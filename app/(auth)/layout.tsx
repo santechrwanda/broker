@@ -15,7 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
     return (
-        <section className="absolute w-full top-0 min-h-screen">
+        <section className="absolute flex flex-col justify-between w-full top-0 min-h-screen">
+            <div></div>
             {children}
             <AuthenticationFooter />
         </section>

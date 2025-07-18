@@ -17,7 +17,7 @@ const SignupForm = () => {
     return (
         <div className="container mx-auto px-4 h-full">
             <div className="flex content-center items-center justify-center h-full">
-                <div className="w-full lg:w-4/12 px-4 pt-10">
+                <div className="w-full lg:w-5/12 px-4 pt-3">
                     <div className="relative flex flex-col min-w-0 break-words w-full shadow-lg rounded-lg bg-white border-0">
                         <div className="rounded-t mb-0 px-6 py-6">
                             <div className="text-center mb-3">

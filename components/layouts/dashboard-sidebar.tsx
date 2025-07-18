@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import clsx from "clsx";
 import { RiOrganizationChart } from "react-icons/ri";
+import { TbReportAnalytics } from "react-icons/tb";
 
 const topNavLinks = [
   { name: "Dashboard", href: "/dashboard", icon: <FiHome size={20} /> },
@@ -21,7 +22,7 @@ const topNavLinks = [
   { name: "Chats", href: "/dashboard/chats", icon: <FiMessageSquare size={20} /> },
   { name: "Users", href: "/dashboard/users", icon: <FiUser size={20} /> },
   { name: "Companies", href: "/dashboard/companies", icon: <RiOrganizationChart size={20} /> },
-  { name: "Reports", href: "/dashboard/reports", icon: <RiOrganizationChart size={20} /> }
+  { name: "Reports", href: "/dashboard/reports", icon: <TbReportAnalytics size={20} /> }
 ];
 
 const bottomNavLinks = [
