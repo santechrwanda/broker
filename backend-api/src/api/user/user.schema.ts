@@ -9,7 +9,7 @@ export type User = z.infer<typeof UserSchema>;
 export const UserSchema = z
   .object({
     id: z.string().optional(),
-    names: z.string(),
+    name: z.string(),
     email: z.string().email(),
     role: z.enum(["client", "manager", "teller", "accountant", "admin"]),
     password: z.string().min(5, "Password must be at least 5 characters long").optional(),

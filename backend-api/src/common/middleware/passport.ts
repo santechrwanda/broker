@@ -68,7 +68,7 @@ export const googleAuthStrategy = async (passport: PassportStatic) => {
                 // New user signing up via Google — allow
                 res = await User.create({
                     email,
-                    names: Object.values(profile.name || {}).join(" "),
+                    name: Object.values(profile.name || {}).join(" "),
                     googleId,
                     role: "client",
                     password: "", // No password for Google users

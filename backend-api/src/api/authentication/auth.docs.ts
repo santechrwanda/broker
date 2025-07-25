@@ -11,7 +11,7 @@ authRegistry.registerPath({
     method: "post",
     path: "/api/register",
     request: {
-        body: createApiReqestBody(UserSchema.pick({ names: true, email: true, password: true })),
+        body: createApiReqestBody(UserSchema.pick({ name: true, email: true, password: true })),
     },
     tags: ["Authentication"],
     responses: createApiResponse(UserSchema, "User registered successfully", StatusCodes.OK),

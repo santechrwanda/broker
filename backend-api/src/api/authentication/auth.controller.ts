@@ -12,10 +12,10 @@ class AuthenticationController {
   public registerUser: RequestHandler = asyncCatch(
     async (_req: Request, res: Response) => {
       const hashedPassword = await getHash(_req.body.password);
-      const { names, email, address, phone_number } = _req.body;
+      const { name, email, address, phone_number } = _req.body;
 
       const { dataValues: user } = await User.create({
-        names,
+        name,
         email,
         address,
         phone_number,
@@ -45,6 +45,9 @@ class AuthenticationController {
 
       if (!isMatch)
         return next(ErrorHandler.BadRequest("Invalid email or Password!"));
+
+      if(user?.status === "blocked")
+        return next(ErrorHandler.Forbidden("Your account has been blocked. Please contact support for assistance."));
 
       attachCookie(user, res);
 
@@ -88,7 +91,7 @@ class AuthenticationController {
       });
 
       const resetLink = `${process.env.FRONTED_REDIRECT}/reset-password/${resetCode}`;
-      const emailMessage = forgotPasswordEmailTemplate(user.names, resetLink);
+      const emailMessage = forgotPasswordEmailTemplate(user.name, resetLink);
 
       try {
         await sendEmail(
@@ -97,7 +100,7 @@ class AuthenticationController {
           emailMessage
         );
         return ServiceResponse.success(
-          `Email sent to: ${user.names}`,
+          `Email sent to: ${user.name}`,
           null,
           res
         );

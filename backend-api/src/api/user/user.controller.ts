@@ -4,15 +4,24 @@ import { asyncCatch, ErrorHandler } from "@/common/middleware/errorHandler";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { Op } from "sequelize";
 import { getHash } from "@/common/utils/bcrypt";
+import Setting from "@/common/models/settings";
 
 class UserController {
   public createUser: RequestHandler = asyncCatch(
     async (req: Request, res: Response, next: NextFunction) => {
-      const { names, email, address, phone_number, role, password } = req.body;
-      
-      const hashedPassword = await getHash(password);
-      const user = await User.create({
-        names,
+      const { name, email, address, phone_number, role, password } = req.body;
+      let hashedPassword = "";
+
+      if (password) {
+        hashedPassword = await getHash(password);
+      } else {
+        const data = await Setting.findOne();
+        const settings = data?.dataValues;
+        hashedPassword = settings?.defaultPassword || undefined;
+      }
+
+      const { dataValues: user} = await User.create({
+        name,
         email,
         address,
         phone_number,
@@ -23,22 +32,26 @@ class UserController {
     }
   );
 
-    public allUsers: RequestHandler = asyncCatch(
-        async (req: Request, res: Response, next: NextFunction) => {
-        const { search } = req.query;
-        const whereClause = search
-            ? {
-                [Op.or]: [
-                { names: { [Op.iLike]: `%${search}%` } },
-                { email: { [Op.iLike]: `%${search}%` } },
-                ],
-            }
-            : {};
-    
-        const users = await User.findAll({ where: whereClause });
-        return ServiceResponse.success("Users retrieved successfully!", users, res);
-        }
-    );
+  public allUsers: RequestHandler = asyncCatch(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { search } = req.query;
+      const whereClause = search
+        ? {
+            [Op.or]: [
+              { name: { [Op.iLike]: `%${search}%` } },
+              { email: { [Op.iLike]: `%${search}%` } },
+            ],
+          }
+        : {};
+
+      const users = await User.findAll({ where: whereClause });
+      return ServiceResponse.success(
+        "Users retrieved successfully!",
+        users,
+        res
+      );
+    }
+  );
 
   public updateUser: RequestHandler = asyncCatch(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -69,6 +82,38 @@ class UserController {
       if (!user) return next(ErrorHandler.NotFound("User not found"));
       await user.update({ status });
       return ServiceResponse.success("User status updated!", user, res);
+    }
+  );
+
+  public importUsers: RequestHandler = asyncCatch(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const users = req.body.users;
+      
+      if (!Array.isArray(users) || users.length === 0) {
+        return ServiceResponse.failure("No users provided for import", null, res, 400);
+      }
+      const createdUsers = [];
+      for (const user of users) {
+        const { name, email, address, phone_number, role, password } = user;
+        let hashedPassword = "";
+        if (password) {
+          hashedPassword = await getHash(password);
+        } else {
+          const data = await Setting.findOne();
+          const settings = data?.dataValues;
+          hashedPassword = settings?.defaultPassword || undefined;
+        }
+        const { dataValues: createdUser } = await User.create({
+          name,
+          email,
+          address,
+          phone_number,
+          role,
+          password: hashedPassword,
+        });
+        createdUsers.push(createdUser);
+      }
+      return ServiceResponse.success("Users imported successfully!", createdUsers, res);
     }
   );
 }

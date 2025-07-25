@@ -30,6 +30,7 @@ const returnErrorToUser: ErrorRequestHandler = (errors, _req, res, next) => {
   }
 
   if (env.NODE_ENV === "production" || env.NODE_ENV === "test") {
+    console.log(error);
     if(error.name === "SequelizeUniqueConstraintError"){
         const message = `Duplicate field value: '${error?.errors[0].value}'. Please use another value!`;
         error = new ErrorHandler(message, 400);
@@ -71,7 +72,9 @@ export class ErrorHandler extends Error {
   static NotFound(message: string) {
     return new ErrorHandler(message, 404);
   }
-
+  static Forbidden(message: string) {
+    return new ErrorHandler(message, 403);
+  }
   static InternalServerError(message = "Internal Server Error") {
     return new ErrorHandler(message, 500);
   }

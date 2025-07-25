@@ -54,3 +54,13 @@ userRegistry.registerPath({
   },
   responses: createApiResponse(UserSchema, "User status updated", StatusCodes.OK),
 });
+
+userRegistry.registerPath({
+  method: "post",
+  path: "/api/users/import",
+  tags: ["User"],
+  request: {
+    body: createApiReqestBody(z.object({ users: z.array(UserSchema) })),
+  },
+  responses: createApiResponse(z.array(UserSchema), "Users imported", StatusCodes.CREATED),
+});

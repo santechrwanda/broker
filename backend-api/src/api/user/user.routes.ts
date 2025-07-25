@@ -8,5 +8,6 @@ userRoutes.post("/", userController.createUser);
 userRoutes.put("/:id", userController.updateUser);
 userRoutes.delete("/:id", userController.deleteUser);
 userRoutes.patch("/:id/status", userController.changeUserStatus);
+userRoutes.post("/import", userController.importUsers);
 
 export { userRoutes };
