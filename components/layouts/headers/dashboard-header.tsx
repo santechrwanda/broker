@@ -14,7 +14,7 @@ const getDisplayName = (fullName: string) => {
 
 const DashboardHeader: React.FC = () => {
     const { data: user, isLoading } = useGetLoggedUserQuery();
-    const displayName = getDisplayName(user?.names || "");
+    const displayName = getDisplayName(user?.name || "");
     const [open, setOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 

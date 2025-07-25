@@ -23,7 +23,7 @@ const UserExports: React.FC<UserExportsProps> = ({ setShowFilters, filteredUsers
       { header: "NAME", key: "name", width: 20 },
       { header: "EMAIL", key: "email", width: 30 },
       { header: "PHONE", key: "phone", width: 20 },
-      { header: "JOINING DATE", key: "date", width: 20 },
+      { header: "USER", key: "role", width: 20 },
       { header: "STATUS", key: "status", width: 15 },
     ];
 
@@ -36,7 +36,7 @@ const UserExports: React.FC<UserExportsProps> = ({ setShowFilters, filteredUsers
         name: user.name,
         email: user.email,
         phone: user.phone,
-        date: user.date,
+        role: user.role,
         status: user.status,
       });
 
@@ -69,12 +69,12 @@ const UserExports: React.FC<UserExportsProps> = ({ setShowFilters, filteredUsers
   };
 
   const exportToCSV = () => {
-    const headers = ["NAME", "EMAIL", "PHONE", "JOINING DATE", "STATUS"];
+    const headers = ["NAME", "EMAIL", "PHONE", "USER", "STATUS"];
     const rows = filteredUsers.map((c) => [
       c.name,
       c.email,
       c.phone,
-      c.date,
+      c.role,
       c.status,
     ]);
 
@@ -118,7 +118,7 @@ const UserExports: React.FC<UserExportsProps> = ({ setShowFilters, filteredUsers
           PDF
         </button>
         <button
-          className="flex cursor-pointer items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-green-700 hover:bg-gray-50 w-full md:w-auto justify-center"
+          className="flex cursor-pointer items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-blue-700 hover:bg-gray-50 w-full md:w-auto justify-center"
           onClick={exportToCSV}
         >
           <BsFiletypeCsv />

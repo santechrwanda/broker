@@ -4,7 +4,7 @@ import backendApi from "./backend-api";
 export interface RegisterUserRequest {
   email: string;
   password: string;
-  names?: string;
+  name?: string;
 }
 
 export interface LoginUserRequest {
@@ -29,14 +29,14 @@ export interface AuthResponse {
   user?: {
     id: string;
     email: string;
-    names?: string;
+    name?: string;
   };
 }
 
 export interface LoggedUser {
   id: string;
   email: string;
-  names?: string;
+  name?: string;
   role: string;
   phone_number?: string;
   address?: string;

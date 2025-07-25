@@ -3,15 +3,9 @@ import CustomerChart from "@/components/pages/dashboard/customer-chart";
 import Link from "next/link";
 import React from "react";
 import {
-    FaAngleDown,
-  FaDollarSign,
-  FaShoppingCart,
-  FaUsers,
   FaWallet,
 } from "react-icons/fa";
-import { FiCalendar } from "react-icons/fi";
 import { GoOrganization } from "react-icons/go";
-import { IoIosAddCircle } from "react-icons/io";
 import { PiCurrencyDollarSimple } from "react-icons/pi";
 import { TbUsersGroup } from "react-icons/tb";
 

@@ -1,30 +1,26 @@
-"use client";
 import LoginForm from "@/components/forms/login-form";
 import Link from "next/link";
 import React from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import { Provider } from "react-redux";
-import { store } from '@/hooks/store';
-import { useSearchParams } from 'next/navigation'
 
-const LoginPage = () => {
-    const searchParams = useSearchParams();
+interface LoginProps {
+    searchParams: Promise<{ error: string }>
+}
+const LoginPage = async({ searchParams }: LoginProps) => {
 
-    const error = searchParams.get('error');
+    const { error } = await searchParams;
 
     return (
-        <Provider store={ store }>
-            <div>
-                <div className="absolute top-0 w-full h-full bg-gradient-to-br from-[#4daec9] via-[#004f64] to-[#004f64]"></div>
-                <Link
-                    href="/"
-                    className="fixed top-4 left-4 text-gray-700 hover:text-[#004f64] z-50"
-                >
-                    <FaArrowLeftLong size={28} className="text-white" />
-                </Link>
-                <LoginForm backendError={ error || "" } />
-            </div>
-        </Provider>
+        <div>
+            <div className="absolute top-0 w-full h-full bg-gradient-to-br from-[#4daec9] via-[#004f64] to-[#004f64]"></div>
+            <Link
+                href="/"
+                className="fixed top-4 left-4 text-gray-700 hover:text-[#004f64] z-50"
+            >
+                <FaArrowLeftLong size={28} className="text-white" />
+            </Link>
+            <LoginForm backendError={ error || "" } />
+        </div>
     );
 };
 

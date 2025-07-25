@@ -55,7 +55,7 @@ const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
       dropdownClassName="min-w-36 rounded-md bg-white shadow-lg ring-1 ring-black/5 py-1"
       position="bottom-right"
     >
-      {actions.map((action, idx) => (
+      {actions.map((action) => (
         <React.Fragment key={action.action_name}>
           {action.action_name === "Block" && <hr className="my-1 border-gray-200" />}
           <DropdownItem

@@ -1,9 +1,12 @@
+"use client";
 import DashboardSidebar from "@/components/layouts/dashboard-sidebar";
 import React from "react";
-import HeaderWrapper from "@/components/layouts/headers/header-wrapper";
 import { TbReportAnalytics } from "react-icons/tb";
 import { FiHome, FiMessageSquare, FiUser } from "react-icons/fi";
 import { MdOutlineSell } from "react-icons/md";
+import DashboardHeader from "@/components/layouts/headers/dashboard-header";
+import { Provider } from "react-redux";
+import { store } from "@/hooks/store";
 
 const topNavLinks = [
     { name: "Dashboard", href: "/teller", icon: <FiHome size={20} /> },
@@ -29,13 +32,15 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     return (
+        <Provider store={store}>
         <div className="flex min-h-screen bg-[#f6f9fc]">
             <DashboardSidebar topNavLinks={ topNavLinks }/>
             <div className="flex-1 ml-64 flex flex-col min-h-screen">
-                <HeaderWrapper />
+                <DashboardHeader />
                 <main className="flex-1 p-6 relative overflow-y-auto">{children}</main>
             </div>
         </div>
+        </Provider>
     );
 };
 

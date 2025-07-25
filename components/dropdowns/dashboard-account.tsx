@@ -38,7 +38,7 @@ const DashboardAccountMenu: React.FC<AccountsProps> = ({ user }) => {
           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
         >
           Signed In as <br />{" "}
-          <span className="font-semibold">{user?.names}</span>
+          <span className="font-semibold">{user?.name}</span>
         </p>
       </div>
       <div role="none" className="py-1">

@@ -1,5 +1,4 @@
-{
-    "customers": [
+export const customers = [
     {
       "name": "Timothy Smith",
       "email": "timothysmith@veizon.com",
@@ -15,4 +14,3 @@
       "status": "ACTIVE"
     }
   ]
-}

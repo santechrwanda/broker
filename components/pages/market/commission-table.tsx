@@ -84,7 +84,7 @@ export default function CommisionTable() {
 				</div>
 			</div>
 
-			<div className="overflow-x-auto mt-7">
+			<div className="max-sm:overflow-x-auto mt-7">
 				<table className="min-w-full divide-y divide-gray-200">
 					<thead className="bg-gray-100">
 						<tr>

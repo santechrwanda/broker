@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { customers } from "./users.json";
+import { customers } from "./users";
 import UsersList from "@/components/pages/users/users-list";
 import UserFilters from "@/components/pages/users/user-filters";
 import UserExports from "@/components/pages/users/user-exports";
@@ -30,11 +30,11 @@ const UsersPage = () => {
 
   // ✅ Memoize filtered results
   const filteredCustomers = useMemo(() => {
-    return customers.filter((customer) => {
+    return customers?.filter((customer) => {
       const matchesSearch =
-        customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.phone.includes(searchQuery);
+        customer?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer?.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer?.phone.includes(searchQuery);
 
       const matchesStatus =
         selectedStatus === "All" || customer.status === selectedStatus;

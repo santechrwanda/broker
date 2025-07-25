@@ -98,7 +98,7 @@ const Header: React.FC = () => {
                 onClick={() => setProfileOpen((prev) => !prev)}
               >
                 <FaRegUserCircle size={22} className="inline-block" />
-                <span>{user.names}</span>
+                <span>{user.name}</span>
                 <span className="text-xs bg-white/20 px-2 py-1 rounded">
                   {user.role}
                 </span>
@@ -109,7 +109,7 @@ const Header: React.FC = () => {
                   <div className="py-1">
                     <p className="block px-4 py-2 text-sm text-gray-700">
                       Signed in as <br />
-                      <span className="font-semibold">{user.names}</span>
+                      <span className="font-semibold">{user.name}</span>
                     </p>
                   </div>
                   <div className="py-1">

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 const SignupForm = () => {
     const [email, setEmail] = useState("");
-    const [names, setNames] = useState("");
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
@@ -19,7 +19,7 @@ const SignupForm = () => {
         e.preventDefault();
         setError(null);
         try {
-            const res = await registerUser({ email, password, names }).unwrap();
+            const res = await registerUser({ email, password, name }).unwrap();
             if (!res.success) {
                 setError(res.message || "Registration failed");
             }
@@ -81,9 +81,9 @@ const SignupForm = () => {
                                         maxLength={100}
                                         className="px-3 py-3 placeholder-gray-400 text-gray-700 rounded text-sm shadow focus:outline-none border border-gray-500/30 focus:shadow-outline w-full"
                                         placeholder="Joe Doe"
-                                        value={names}
+                                        value={name}
                                         onChange={(e) =>
-                                            setNames(e.target.value)
+                                            setName(e.target.value)
                                         }
                                         required
                                     />

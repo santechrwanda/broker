@@ -14,13 +14,22 @@ export default function ReportFormModal() {
   const [broker, setBroker] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [reportFormat, setReportFormat] = useState("pdf");
+  const [reportName, setReportName] = useState("");
 
-  const brokers = [
-    "BK Capital",
-    "CDH Investment Bank",
-    "MBEA Brokerage",
-    "Dyer & Blair",
-    "Other",
+  const brokersOptions = [
+    {label: "BK Capital", value: "BK Capital"},
+    {label: "Standard Investment Bank", value: "Standard Investment Bank"},
+    {label: "Kestrel Capital", value: "Kestrel Capital"},
+    {label: "Genghis Capital", value: "Genghis Capital"},
+    {label: "Old Mutual Securities", value: "Old Mutual Securities"},
+    {label: "NCBA Capital", value: "NCBA Capital"},
+    {label: "AIB Capital", value: "AIB Capital"},
+    {label: "CBA Capital", value: "CBA Capital"},
+    {label: "Dyer & Blair Investment Bank", value: "Dyer & Blair Investment Bank"},
+    {label: "African Alliance", value: "African Alliance"},
+    {label: "ABC Capital", value: "ABC Capital"},
+    {label: "Equity Investment Bank", value: "Equity Investment Bank"}
   ];
   const [type, setType] = useState("market");
 
@@ -28,6 +37,11 @@ export default function ReportFormModal() {
     { value: "market", label: "Market Overview" },
     { value: "transactions", label: "Transaction History" },
     { value: "broker-performance", label: "Broker Performance" },
+  ];
+
+  const reportFormatOptions =  [
+    { value: "pdf", label: "PDF" },
+    { value: "excel", label: "Excel" }
   ];
 
   useEffect(() => {
@@ -109,6 +123,22 @@ export default function ReportFormModal() {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+                <label
+                  htmlFor="broker"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Report Name
+                </label>
+                
+                <input
+                type="text"
+                  value={reportName}
+                  placeholder="Enter Report Name"
+                  onChange={(e) => setReportName(e.target.value)}
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm outline-none focus:ring focus:ring-gray-200"
+                />
+              </div>
               {/* Date Range */}
               <div className="flex gap-4">
                 <div className="flex-1">
@@ -148,27 +178,23 @@ export default function ReportFormModal() {
                 className="w-full"
               />
               {/* Select Broker */}
-              <div>
-                <label
-                  htmlFor="broker"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Select Broker
-                </label>
-                <select
-                  id="broker"
-                  value={broker}
-                  onChange={(e) => setBroker(e.target.value)}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                >
-                  <option value="">-- Choose a Broker --</option>
-                  {brokers.map((b) => (
-                    <option key={b} value={b}>
-                      {b}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <SelectDropdown
+                label="Select Broker"
+                options={brokersOptions}
+                value={broker}
+                onChange={(value) => setBroker(value)}
+                className="w-full"
+              />
+
+              {/* Select Broker */}
+              <SelectDropdown
+                label="Report Format"
+                options={reportFormatOptions}
+                value={reportFormat}
+                onChange={(value) => setReportFormat(value)}
+                className="w-full"
+              />
+
 
               
 

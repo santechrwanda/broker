@@ -5,10 +5,7 @@ import CompaniesTable from "@/components/pages/companies/companies-table";
 import CompanyDetails from "@/components/pages/companies/company-details";
 import { SelectDropdown } from "@/components/ui/select";
 import { useState } from "react";
-import {
-  FiSearch,
-  FiChevronDown,
-} from "react-icons/fi";
+import { FiSearch, FiChevronDown } from "react-icons/fi";
 
 // Type for a company
 export interface Company {
@@ -26,7 +23,7 @@ export interface Company {
   description?: string;
 }
 
-const companies: Company[] = [
+const default_companies: Company[] = [
   {
     id: 1,
     name: "Syntyce Solutions",
@@ -107,23 +104,24 @@ const companies: Company[] = [
   },
 ];
 
-
 const CompanyTable = () => {
-  const [selectedCompany, setSelectedCompany] = useState<Company>(companies[0]);
-  const [selectedValue, setSelectedValue] = useState('');
-  
-  const options = [
-    { value: 'Location', label: 'Location' },
-    { value: 'Company', label: 'Company' },
-    { value: 'Owner', label: 'Owner' },
-    { value: 'Rating', label: 'Rating' },
-  ];
+  const [selectedCompany, setSelectedCompany] = useState<Company>(
+    default_companies[0]
+  );
+  const [selectedValue, setSelectedValue] = useState("");
+  const [companies, setCompanies] = useState<Company[]>(default_companies);
 
+  const options = [
+    { value: "Location", label: "Location" },
+    { value: "Company", label: "Company" },
+    { value: "Owner", label: "Owner" },
+    { value: "Rating", label: "Rating" },
+  ];
 
   return (
     <>
       {/* Header */}
-      <AddCompaniesHeader />
+      <AddCompaniesHeader companies={companies} setCompanies={setCompanies} />
 
       <div className="min-h-screen bg-gray-50 mt-6">
         <div className="max-w-7xl mx-auto">
@@ -152,7 +150,7 @@ const CompanyTable = () => {
                         onChange={setSelectedValue}
                         placeholder="Sort by"
                         className="w-40"
-                        />
+                      />
                       <FiChevronDown className="w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
                     </div>
                   </div>
@@ -160,10 +158,10 @@ const CompanyTable = () => {
               </div>
 
               {/* Table */}
-              <CompaniesTable 
-                companies={ companies }
-                selectedCompany={ selectedCompany }
-                setSelectedCompany={ setSelectedCompany }
+              <CompaniesTable
+                companies={companies}
+                selectedCompany={selectedCompany}
+                setSelectedCompany={setSelectedCompany}
               />
 
               {/* Pagination */}
@@ -186,7 +184,7 @@ const CompanyTable = () => {
             </div>
 
             {/* Company Details Sidebar */}
-            <CompanyDetails selectedCompany={ selectedCompany }/>
+            <CompanyDetails selectedCompany={selectedCompany} />
           </div>
         </div>
       </div>

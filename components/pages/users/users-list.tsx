@@ -1,20 +1,29 @@
 import UserActionsDropdown, { UserAction } from "@/components/dropdowns/users-actions-dropdown";
-import React from "react";
+import React, { useState } from "react";
+import ConfirmDeletionModal from "./confirm-delete-modal";
+// import AddContactModal from "./add-user-modal";
 
 export interface UserShape {
+    id?: string,
     name: string,
     email: string,
     role: string,
     phone: string,
-    status: string
+    status: string,
+    address?: string,
+    commission?: string,
+    salary?: string
 }
 
 interface UsersListProps {
     users: UserShape[],
-    userActions?: UserAction[]
+    userActions?: UserAction[],
+    setIsDeleteOpen?: (bol: boolean) => void
+    isDeleteOpen?: boolean
 }
 
-const UsersList = ({ users, userActions }: UsersListProps) => {
+const UsersList = ({ users, userActions, setIsDeleteOpen, isDeleteOpen }: UsersListProps) => {
+    const [selectedUser, setSelectedUser] = useState<UserShape>();
   return (
     <div className="w-full h-full">
       <table className="min-w-full divide-y divide-gray-200">
@@ -60,25 +69,25 @@ const UsersList = ({ users, userActions }: UsersListProps) => {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {users.map((user, index) => (
-            <tr key={index} className="hover:bg-gray-50">
+            <tr key={index} className="hover:bg-gray-50" onClick={()=>setSelectedUser(user)}>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm font-medium text-gray-900">
-                  {user.name}
+                  {user?.name}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">{user.email}</div>
+                <div className="text-sm text-gray-500">{user?.email}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">{user.phone}</div>
+                <div className="text-sm text-gray-500">{user?.phone}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500 capitalize">{user.role}</div>
+                <div className="text-sm text-gray-500 capitalize">{user?.role}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span
-                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    user.status === "ACTIVE"
+                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full uppercase ${
+                    user.status?.toLocaleUpperCase() === "ACTIVE"
                       ? "bg-green-100 text-green-800"
                       : "bg-red-100 text-red-800"
                   }`}
@@ -93,6 +102,17 @@ const UsersList = ({ users, userActions }: UsersListProps) => {
           ))}
         </tbody>
       </table>
+
+      <ConfirmDeletionModal
+        userName={selectedUser?.name || ""}
+        userId={ selectedUser?.id || ""}
+        setIsOpen={ setIsDeleteOpen }
+        isOpen={ isDeleteOpen || false }
+      />
+
+      {/* <AddContactModal
+        setIsUpdateOpen={}
+      /> */}
     </div>
   );
 };

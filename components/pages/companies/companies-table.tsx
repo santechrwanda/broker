@@ -1,11 +1,6 @@
 import { Company } from "@/app/dashboard/companies/page";
 import CompaniesActionsDropdown from "@/components/dropdowns/companies-action-dropdown";
-import { CustomDropdown, DropdownItem } from "@/components/ui/dropdown";
 import React from "react";
-import { FaRegCircleStop } from "react-icons/fa6";
-import { HiDotsHorizontal, HiOutlineEye } from "react-icons/hi";
-import { LuPencil } from "react-icons/lu";
-import { RiDeleteBin5Line } from "react-icons/ri";
 
 interface CompaniesProps {
   companies: Company[];

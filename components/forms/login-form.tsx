@@ -6,12 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useLoginUserMutation } from "@/hooks/use-authentication";
-
-interface ErrorProps {
-    data?: {
-        message?: string;
-    }
-}
+import { ReduxErrorProps } from "@/utility/types";
 
 interface LoginFormProps {
     backendError?: string;
@@ -30,7 +25,7 @@ const LoginForm = ({ backendError }: LoginFormProps) => {
         if (backendError) {
             setLoginError(backendError);
         }else if (error) {
-            setLoginError((error as ErrorProps)?.data?.message || "An error occurred during login.");
+            setLoginError((error as ReduxErrorProps)?.data?.message || "An error occurred during login.");
         } 
     }, [backendError, error])
 
