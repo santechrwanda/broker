@@ -4,42 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-    FiHome,
-    FiShield,
-    FiMessageSquare,
     FiSettings,
     FiUser,
-    FiSearch,
 } from "react-icons/fi";
 import Image from "next/image";
 import clsx from "clsx";
-import { RiOrganizationChart } from "react-icons/ri";
-import { TbReportAnalytics } from "react-icons/tb";
-
-const topNavLinks = [
-    { name: "Dashboard", href: "/dashboard", icon: <FiHome size={20} /> },
-    {
-        name: "Security",
-        href: "/dashboard/security",
-        icon: <FiShield size={20} />,
-    },
-    {
-        name: "Chats",
-        href: "/dashboard/chats",
-        icon: <FiMessageSquare size={20} />,
-    },
-    { name: "Users", href: "/dashboard/users", icon: <FiUser size={20} /> },
-    {
-        name: "Companies",
-        href: "/dashboard/companies",
-        icon: <RiOrganizationChart size={20} />,
-    },
-    {
-        name: "Reports",
-        href: "/dashboard/reports",
-        icon: <TbReportAnalytics size={20} />,
-    },
-];
 
 const bottomNavLinks = [
     {
@@ -50,7 +19,14 @@ const bottomNavLinks = [
     { name: "Profile", href: "/dashboard/profile", icon: <FiUser size={20} /> },
 ];
 
-const DashboardSidebar: React.FC = () => {
+interface SideBarProps {
+    topNavLinks: {
+        name: string;
+        href: string;
+        icon: React.ReactNode;
+    }[]
+}
+const DashboardSidebar: React.FC<SideBarProps> = ({ topNavLinks }) => {
     const pathname = usePathname();
 
     return (
@@ -72,18 +48,6 @@ const DashboardSidebar: React.FC = () => {
 
                 {/* Search */}
                 <div className="px-3 py-4">
-                    <div className="relative mb-6">
-                        <FiSearch
-                            className="absolute left-3 top-3 text-gray-400"
-                            size={18}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Search"
-                            className="w-full pl-10 pr-3 py-2 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#004f64]/20 text-sm"
-                        />
-                    </div>
-
                     {/* Top Nav */}
                     <nav>
                         <ul className="flex flex-col gap-2">
@@ -119,7 +83,7 @@ const DashboardSidebar: React.FC = () => {
 
             {/* Bottom Panel */}
             <div className="px-3 py-4 border-t border-gray-100">
-                <ul className="flex flex-col gap-2">
+                <ul className="flex flex-col gap-1">
                     {bottomNavLinks.map((link) => {
                         const isActive = pathname === link.href;
                         return (
@@ -127,7 +91,7 @@ const DashboardSidebar: React.FC = () => {
                                 <Link
                                     href={link.href}
                                     className={clsx(
-                                        "flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition group",
+                                        "flex items-center gap-3 px-4 py-2 text-sm rounded-lg font-medium transition group",
                                         isActive
                                             ? "bg-[#eaf6fa] text-[#007fa3]"
                                             : "text-gray-700 hover:bg-[#eaf6fa]",

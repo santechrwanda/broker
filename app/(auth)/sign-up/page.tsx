@@ -1,11 +1,14 @@
+"use client";
 import SignupForm from "@/components/forms/signup-form";
+import { store } from "@/hooks/store";
 import Link from "next/link";
 import React from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { Provider } from "react-redux";
 
 const SignupPage = () => {
     return (
-        <>
+        <Provider store={ store }>
             <div className="absolute top-0 w-full h-full bg-gradient-to-br from-[#4daec9] via-[#004f64] to-[#004f64]"></div>
             <Link
                 href="/sign-in"
@@ -14,7 +17,7 @@ const SignupPage = () => {
                 <FaArrowLeftLong size={28} className="text-white" />
             </Link>
             <SignupForm />
-        </>
+        </Provider>
     );
 };
 

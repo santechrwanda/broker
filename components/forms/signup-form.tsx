@@ -2,16 +2,32 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { FaSpinner } from "react-icons/fa";
+import { useRegisterUserMutation } from "@/hooks/use-authentication";
+import { useRouter } from "next/navigation";
 
 const SignupForm = () => {
     const [email, setEmail] = useState("");
     const [names, setNames] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+
+    const [registerUser, { isLoading }] = useRegisterUserMutation();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        try {
+            const res = await registerUser({ email, password, names }).unwrap();
+            if (!res.success) {
+                setError(res.message || "Registration failed");
+            }
+            router.push("/sign-in");
+            // Optionally redirect or show success message here
+        } catch (err: any) {
+            setError(err?.data?.message || "Registration failed");
+        }
     };
 
     return (
@@ -26,7 +42,8 @@ const SignupForm = () => {
                                 </h6>
                             </div>
                             <div className="btn-wrapper text-center">
-                                <button
+                                <Link
+                                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/google-login`}
                                     className="active:bg-gray-100 text-gray-600 font-normal cursor-pointer px-4 py-2 rounded-3xl outline-none focus:outline-none mb-1 shadow hover:bg-gray-100 inline-flex items-center border border-gray-500/30 text-base w-full justify-center"
                                     type="button"
                                 >
@@ -34,7 +51,7 @@ const SignupForm = () => {
                                         <FcGoogle name="google" size={20} />
                                     </span>
                                     Continue with Google
-                                </button>
+                                </Link>
                             </div>
                             <hr className="mt-6 border-b-1 border-gray-300/40" />
                         </div>
@@ -103,9 +120,13 @@ const SignupForm = () => {
                                 </div>
                                 <div className="text-center mt-6">
                                     <button
-                                        className="bg-[#004f64] text-white active:bg-[#003f50] text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full"
+                                        className="bg-[#004f64] text-white active:bg-[#003f50] text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full flex items-center justify-center"
                                         type="submit"
+                                        disabled={isLoading}
                                     >
+                                        {isLoading ? (
+                                            <FaSpinner className="animate-spin mr-2" />
+                                        ) : null}
                                         SIGN UP
                                     </button>
                                 </div>

@@ -5,134 +5,163 @@ import Image from "next/image";
 import { FaBars } from "react-icons/fa";
 import { MdOutlineAccountCircle } from "react-icons/md";
 import { CiSearch } from "react-icons/ci";
-import gsap from "gsap";
 import NavigationLinks from "@/components/pages/landing/nav-links";
 import LanguageDropdown from "@/components/dropdowns/language-dropdown";
 import MobileMenu from "@/components/dropdowns/mobile-menu";
+import {
+  useGetLoggedUserQuery,
+  useLogoutUserMutation,
+} from "@/hooks/use-authentication";
+import { FaRegUserCircle } from "react-icons/fa";
+import { FiChevronDown } from "react-icons/fi";
+import HeaderSearch from "./header-search";
 
 const Header: React.FC = () => {
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [searchOpen, setSearchOpen] = useState(false);
-    const [searchValue, setSearchValue] = useState("");
-    const modalRef = React.useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = React.useRef<HTMLDivElement>(null);
+  const { data: user } = useGetLoggedUserQuery();
+  const [logoutUser] = useLogoutUserMutation();
 
-    // Animate modal open
-    React.useEffect(() => {
-        if (searchOpen && modalRef.current) {
-            gsap.fromTo(
-                modalRef.current,
-                { opacity: 0, scale: 0.9 },
-                { opacity: 1, scale: 1, duration: 0.35, ease: "power2.out" },
-            );
-        }
-    }, [searchOpen]);
-
-    // Close modal on Escape
-    React.useEffect(() => {
-        if (!searchOpen) return;
-        const handleKey = (e: KeyboardEvent) => {
-            if (e.key === "Escape") setSearchOpen(false);
-        };
-        window.addEventListener("keydown", handleKey);
-        return () => window.removeEventListener("keydown", handleKey);
-    }, [searchOpen]);
-
-    const handleSearchSubmit = (e?: React.FormEvent) => {
-        if (e) e.preventDefault();
-        // TODO: Implement search logic
-        setSearchOpen(false);
+  // Close modal on Escape
+  React.useEffect(() => {
+    if (!searchOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSearchOpen(false);
     };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [searchOpen]);
 
-    return (
-        <header className="py-4 px-4 sm:px-10 z-50 min-h-[70px] bg-white shadow-md sticky top-0">
-            {/* Search Modal */}
-            {searchOpen && (
-                <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40"
-                    onClick={() => setSearchOpen(false)}
-                >
-                    <div
-                        ref={modalRef}
-                        className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md gap-2 relative min-h-74"
-                        onClick={(e) => e.stopPropagation()}
+  // Close profile dropdown on outside click
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        setProfileOpen(false);
+      }
+    };
+    if (profileOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [profileOpen]);
+
+  const handleSignOut = async () => {
+    await logoutUser().unwrap();
+    window.location.href = "/sign-in";
+  };
+
+  return (
+    <header className="py-4 px-4 sm:px-10 z-50 min-h-[70px] bg-white shadow-md sticky top-0">
+      {/* Search Modal */}
+      {searchOpen && (
+        <HeaderSearch setSearchOpen={setSearchOpen} searchOpen={searchOpen} />
+      )}
+      <div className="relative flex flex-wrap items-center gap-4">
+        <Link href="/">
+          <Image
+            src="/logo.svg"
+            alt="logo"
+            width={130}
+            height={40}
+            className="w-24"
+            priority
+          />
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden lg:flex flex-1 justify-center">
+          <NavigationLinks />
+        </nav>
+
+        {/* Desktop Buttons */}
+        <div className="hidden lg:flex items-center gap-4">
+          <button
+            className="text-gray-700 font-medium px-4 py-2 rounded transition hover:text-green-700"
+            onClick={() => setSearchOpen(true)}
+          >
+            <CiSearch size={25} className="inline-block mr-2" />
+          </button>
+
+          <LanguageDropdown />
+
+          {user ? (
+            <div className="relative" ref={profileRef}>
+              <button
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#2d94b0] to-[#004f64] text-white font-semibold shadow cursor-pointer transition"
+                onClick={() => setProfileOpen((prev) => !prev)}
+              >
+                <FaRegUserCircle size={22} className="inline-block" />
+                <span>{user.names}</span>
+                <span className="text-xs bg-white/20 px-2 py-1 rounded">
+                  {user.role}
+                </span>
+                <FiChevronDown className="ml-1" />
+              </button>
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 z-50">
+                  <div className="py-1">
+                    <p className="block px-4 py-2 text-sm text-gray-700">
+                      Signed in as <br />
+                      <span className="font-semibold">{user.names}</span>
+                    </p>
+                  </div>
+                  <div className="py-1">
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                        <form
-                            onSubmit={handleSearchSubmit}
-                            className="flex w-full"
-                        >
-                            <input
-                                type="text"
-                                autoFocus
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                placeholder="Search..."
-                                className="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none"
-                            />
-                            <button
-                                type="submit"
-                                className="bg-[#004f64] hover:bg-[#004f64]/70 text-white px-4 py-2 rounded-r-lg flex items-center justify-center transition-colors"
-                                aria-label="Submit search"
-                            >
-                                <CiSearch size={22} />
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
-            <div className="relative flex flex-wrap items-center gap-4">
-                <Link href="/">
-                    <Image
-                        src="/logo.svg"
-                        alt="logo"
-                        width={130}
-                        height={40}
-                        className="w-24"
-                        priority
-                    />
-                </Link>
-
-                {/* Desktop Nav */}
-                <nav className="hidden lg:flex flex-1 justify-center">
-                    <NavigationLinks />
-                </nav>
-
-                {/* Desktop Buttons */}
-                <div className="hidden lg:flex items-center gap-4">
+                      Account Settings
+                    </a>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Profile
+                    </a>
+                  </div>
+                  <div className="py-1">
                     <button
-                        className="text-gray-700 font-medium px-4 py-2 rounded transition hover:text-green-700"
-                        onClick={() => setSearchOpen(true)}
+                      onClick={handleSignOut}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                        <CiSearch size={25} className="inline-block mr-2" />
+                      Sign out
                     </button>
-
-                    <LanguageDropdown />
-
-                    <Link
-                        href="/sign-in"
-                        className="px-6 py-2 rounded-full bg-gradient-to-r from-[#2d94b0] to-[#004f64] text-white font-semibold shadow cursor-pointer transition"
-                    >
-                        <MdOutlineAccountCircle
-                            size={20}
-                            className="inline-block mr-2"
-                        />
-                        Sign in
-                    </Link>
+                  </div>
                 </div>
-
-                {/* Mobile Hamburger */}
-                <button
-                    className="lg:hidden ml-auto"
-                    onClick={() => setMenuOpen(true)}
-                    aria-label="Open menu"
-                >
-                    <FaBars className="w-7 h-7 text-[#004f64]" />
-                </button>
+              )}
             </div>
+          ) : (
+            <Link
+              href="/sign-in"
+              className="px-6 py-2 rounded-full bg-gradient-to-r from-[#2d94b0] to-[#004f64] text-white font-semibold shadow cursor-pointer transition"
+            >
+              <MdOutlineAccountCircle size={20} className="inline-block mr-2" />
+              Sign in
+            </Link>
+          )}
+        </div>
 
-            {/* Mobile Menu */}
-            {menuOpen && <MobileMenu setMenuOpen={setMenuOpen} />}
-        </header>
-    );
+        {/* Mobile Hamburger */}
+        <button
+          className="lg:hidden ml-auto"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Open menu"
+        >
+          <FaBars className="w-7 h-7 text-[#004f64]" />
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {menuOpen && <MobileMenu setMenuOpen={setMenuOpen} />}
+    </header>
+  );
 };
 
 export default Header;

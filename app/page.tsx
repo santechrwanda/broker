@@ -10,6 +10,8 @@ import React, { useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { FiArrowUp } from "react-icons/fi";
+import { Provider } from "react-redux";
+import { store } from "@/hooks/store";
 
 gsap.registerPlugin(ScrollToPlugin);
 
@@ -51,6 +53,7 @@ const LandingPage: React.FC = () => {
     };
 
     return (
+        <Provider store={ store }>
         <div className="max-w-[1920px] mx-auto bg-[#f8f9ff] text-black text-[15px]">
             <Header />
             <Hero />
@@ -70,6 +73,7 @@ const LandingPage: React.FC = () => {
                 </button>
             )}
         </div>
+        </Provider>
     );
 };
 

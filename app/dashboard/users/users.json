@@ -1,0 +1,60 @@
+{
+    "customers": [
+    {
+      "name": "Timothy Smith",
+      "email": "timothysmith@veizon.com",
+      "phone": "973-277-6950",
+      "role": "client",
+      "status": "ACTIVE"
+    },
+    {
+      "name": "Herbert Stokes",
+      "email": "herbertstokes@veizon.com",
+      "phone": "312-944-1448",
+      "role": "admin",
+      "status": "BLOCKED"
+    },
+    {
+      "name": "Charles Kubik",
+      "email": "charleskubik@veizon.com",
+      "phone": "231-480-8536",
+      "role": "teller",
+      "status": "BLOCKED"
+    },
+    {
+      "name": "Glen Matney",
+      "email": "glenmatney@veizon.com",
+      "phone": "515-395-1069",
+      "role": "agent",
+      "status": "ACTIVE"
+    },
+    {
+      "name": "Carolyn Jones",
+      "email": "carolynjones@veizon.com",
+      "phone": "414-453-5725",
+      "role": "manager",
+      "status": "ACTIVE"
+    },
+    {
+      "name": "Kevin Dawson",
+      "email": "kevindawson@veizon.com",
+      "phone": "213-741-4294",
+      "role": "client",
+      "status": "ACTIVE"
+    },
+    {
+      "name": "Michael Morris",
+      "email": "michaelmorris@veizon.com",
+      "phone": "805-447-8398",
+      "role": "teller",
+      "status": "BLOCKED"
+    },
+    {
+      "name": "Robert McMahon",
+      "email": "robertmcmahon@veizon.com",
+      "phone": "786-253-9927",
+      "role": "manager",
+      "status": "ACTIVE"
+    }
+  ]
+}

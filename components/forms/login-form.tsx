@@ -1,22 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { useLoginUserMutation } from "@/hooks/use-authentication";
 
-const LoginForm = () => {
+interface ErrorProps {
+    data?: {
+        message?: string;
+    }
+}
+
+interface LoginFormProps {
+    backendError?: string;
+}
+
+const LoginForm = ({ backendError }: LoginFormProps) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [remember, setRemember] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [loginError, setLoginError] = useState("");
     const router = useRouter();
+
+    const [loginUser, { isLoading, error }] = useLoginUserMutation();
+
+    useEffect(()=> {
+        if (backendError) {
+            setLoginError(backendError);
+        }else if (error) {
+            setLoginError((error as ErrorProps)?.data?.message || "An error occurred during login.");
+        } 
+    }, [backendError, error])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
-
-        if (email && password) router.push("/dashboard");
+        await loginUser({ email, password }).unwrap();
+        router.refresh();
     };
 
     return (
@@ -31,7 +52,8 @@ const LoginForm = () => {
                                 </h6>
                             </div>
                             <div className="btn-wrapper text-center">
-                                <button
+                                <Link
+                                    href={`${process.env.NEXT_PUBLIC_API_URL}/api/google-login`}
                                     className="active:bg-gray-100 text-gray-600 font-normal cursor-pointer px-4 py-2 rounded-3xl outline-none focus:outline-none mb-1 shadow hover:bg-gray-100 inline-flex items-center border border-gray-500/30 text-base w-full justify-center"
                                     type="button"
                                 >
@@ -39,7 +61,7 @@ const LoginForm = () => {
                                         <FcGoogle name="google" size={20} />
                                     </span>
                                     Continue with Google
-                                </button>
+                                </Link>
                             </div>
                             <hr className="mt-6 border-b-1 border-gray-300/40" />
                         </div>
@@ -47,14 +69,14 @@ const LoginForm = () => {
                             <div className="text-gray-500 text-center mb-3 font-bold">
                                 <small>Or sign in with credentials</small>
                             </div>
-                            {error && (
+                            {loginError && (
                                 <div className="mb-4">
                                     <div
                                         className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative text-center"
                                         role="alert"
                                     >
                                         <span className="block sm:inline">
-                                            {error}
+                                            { loginError }
                                         </span>
                                     </div>
                                 </div>
@@ -116,17 +138,21 @@ const LoginForm = () => {
                                 </div>
                                 <div className="text-center mt-6">
                                     <button
-                                        className="bg-[#004f64] text-white active:bg-[#003f50] text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full"
+                                        className="bg-[#004f64] text-white active:bg-[#003f50] text-sm font-bold px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full flex items-center justify-center"
                                         type="submit"
+                                        disabled={isLoading}
                                     >
+                                        {isLoading ? (
+                                            <FaSpinner className="animate-spin mr-2" />
+                                        ) : null}
                                         SIGN IN
                                     </button>
                                 </div>
 
                                 <div className="mt-3 flex gap-x-2">
-                                    Don&apos; Have an account?
+                                    Don&apos;t have an account?
                                     <Link
-                                        href="sign-up"
+                                        href="/sign-up"
                                         className="text-[#004f64] hover:underline"
                                     >
                                         Create new account

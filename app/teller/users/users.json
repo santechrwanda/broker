@@ -1,0 +1,18 @@
+{
+    "customers": [
+    {
+      "name": "Timothy Smith",
+      "email": "timothysmith@veizon.com",
+      "phone": "973-277-6950",
+      "role": "client",
+      "status": "ACTIVE"
+    },
+    {
+      "name": "Kevin Dawson",
+      "email": "kevindawson@veizon.com",
+      "phone": "213-741-4294",
+      "role": "client",
+      "status": "ACTIVE"
+    }
+  ]
+}

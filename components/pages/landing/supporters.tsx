@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const PartnerLogos: React.FC = () => {
     return (
-        <section className="my-20" id="partners">
+        <section className="my-28" id="partners">
             <div className="overflow-x-auto">
                 <div className="flex gap-8 items-center min-w-[600px] px-4">
                     <Image

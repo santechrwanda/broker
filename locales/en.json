@@ -1,0 +1,17 @@
+{
+    "home": {
+        "title": "One platform",
+        "subtitle": "all things Stocks",
+        "description": "tep into the world of trading excellence and seize every opportunity with our advanced platform, expert guidance, and strategic insights for unrivaled financial success.",
+        "start_trading": "Start Trading Now!"
+    },
+
+    "navigation": {
+        "home": "Home",
+        "about": "About Us",
+        "contact": "Contact Us",
+        "login": "Sign in",
+        "services": "Services",
+        "market": "Market"
+    }
+}
