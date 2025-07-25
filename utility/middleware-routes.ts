@@ -5,7 +5,7 @@
  * @type { string[] }
  */
 export const publicRoutes = [
-    "/en",
+    "/",
 ];
 
 /**
