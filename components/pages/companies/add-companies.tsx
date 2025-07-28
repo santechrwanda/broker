@@ -1,9 +1,9 @@
-import { Company } from "@/app/dashboard/companies/page";
 import ExportCompaniesDropdown from "@/components/dropdowns/export-company-dropdown";
 import Link from "next/link";
 import React from "react";
 import ExcelJS from "exceljs";
 import { MdOutlineImportExport } from "react-icons/md";
+import { Company } from "@/hooks/use-company";
 
 interface AddCompaniesProps {
     companies: Company[];

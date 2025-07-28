@@ -1,11 +1,11 @@
-import { LoggedUser } from "@/hooks/use-authentication";
 import React from "react";
 import { useLogoutUserMutation } from "@/hooks/use-authentication";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { UserShape } from "../pages/users/users-list";
 
 interface AccountsProps {
-    user?: LoggedUser;
+    user?: UserShape;
 }
 
 const DashboardAccountMenu: React.FC<AccountsProps> = ({ user }) => {

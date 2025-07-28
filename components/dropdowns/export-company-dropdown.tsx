@@ -6,7 +6,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { pdf } from "@react-pdf/renderer";
 import CompanyPDFDocument from "../pages/companies/export-companies-pdf";
-import { Company } from "@/app/dashboard/companies/page";
+import { Company } from "@/hooks/use-company";
 
 interface DropdownCompanyProps {
     companies: Company[];
@@ -27,11 +27,11 @@ const ExportCompaniesDropdown = ({ companies }: DropdownCompanyProps) => {
     worksheet.getRow(1).font = { bold: true };
     companies.forEach((company) => {
       worksheet.addRow({
-        name: company.name,
-        owner: company.owner,
-        industry: company.industry,
-        location: company.location,
-        rating: company.rating,
+        name: company.companyName,
+        owner: company.ownerFullName,
+        industry: company.companyCategory,
+        location: company.companyAddress,
+        rating: company.numberOfShares,
       });
     });
     const buffer = await workbook.xlsx.writeBuffer();
@@ -45,11 +45,11 @@ const ExportCompaniesDropdown = ({ companies }: DropdownCompanyProps) => {
   const exportToCSV = () => {
     const headers = ["NAME", "OWNER", "INDUSTRY", "LOCATION", "RATING"];
     const rows = companies.map((c) => [
-      c.name,
-      c.owner,
-      c.industry,
-      c.location,
-      c.rating,
+      c.companyName,
+      c.ownerFullName,
+      c.companyCategory,
+      c.companyAddress,
+      c.numberOfShares,
     ]);
     const csvContent = [headers, ...rows]
       .map((row) => row.map((cell) => `"${cell}"`).join(","))

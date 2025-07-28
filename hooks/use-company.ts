@@ -84,7 +84,7 @@ const transformFormDataToPayload = (formData: CompanyFormData): FormData => {
 
   // Add file if present
   if (formData.companyLogo) {
-    payload.append("companyLogo", formData.companyLogo)
+    payload.append("profile", formData.companyLogo)
   }
 
   return payload
@@ -178,7 +178,7 @@ const companiesApi = backendApi.injectEndpoints({
 
     deleteCompany: builder.mutation<{ success: boolean; message: string }, string>({
       query: (id) => ({
-        url: `/companies/${id}`,
+        url: `/api/companies/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => ["Companies", "MyCompanies", { type: "Companies", id }],
@@ -215,7 +215,7 @@ const companiesApi = backendApi.injectEndpoints({
 
     updateCompanyStatus: builder.mutation<{ success: boolean; result: Company }, UpdateCompanyStatusRequest>({
       query: ({ id, status }) => ({
-        url: `/companies/${id}/status`,
+        url: `/api/companies/${id}/status`,
         method: "PATCH",
         body: { status },
       }),
