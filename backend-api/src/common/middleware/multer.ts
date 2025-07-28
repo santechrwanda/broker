@@ -4,7 +4,8 @@ import fs from "fs";
 import type { Express, RequestHandler } from "express"; // <-- import RequestHandler
 
 // Ensure assets directory exists
-const assetsDir = path.join(process.cwd(), "assets");
+const assetsDir = path.join("/assets");
+
 if (!fs.existsSync(assetsDir)) {
   fs.mkdirSync(assetsDir, { recursive: true });
 }
