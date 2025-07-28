@@ -4,11 +4,7 @@ import fs from "fs";
 import type { Express, RequestHandler } from "express"; // <-- import RequestHandler
 
 // Ensure assets directory exists
-const assetsDir = path.join("/assets");
-
-if (!fs.existsSync(assetsDir)) {
-  fs.mkdirSync(assetsDir, { recursive: true });
-}
+const assetsDir = path.join("assets");
 
 // Configure storage
 const storage = multer.diskStorage({
