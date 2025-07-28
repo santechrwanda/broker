@@ -5,6 +5,8 @@ import { ServiceResponse } from "@/common/utils/serviceResponse"
 import { asyncCatch, ErrorHandler } from "@/common/middleware/errorHandler"
 import type { Request, Response, NextFunction, RequestHandler } from "express"
 import { Op } from "sequelize"
+import type { User as UserShape } from "../user/user.schema"
+import sequelize from "@/common/config/database"
 
 class CommissionController {
   public createCommission: RequestHandler = asyncCatch(async (req: Request, res: Response, next: NextFunction) => {
@@ -33,7 +35,7 @@ class CommissionController {
       return next(ErrorHandler.BadRequest("Not enough shares available in the company."))
     }
 
-    const createdBy = req.user?.id || null
+    const createdBy = (req.user as UserShape)?.id || null
 
     const { dataValues: commission } = await Commission.create({
       brokerId,
@@ -192,7 +194,7 @@ class CommissionController {
     }
 
     // Prevent updating completed or cancelled commissions
-    if (["completed", "cancelled"].includes(commission.dataValues.status)) {
+    if (["completed", "cancelled"].includes(commission.dataValues.status || "")) {
       return next(ErrorHandler.BadRequest("Cannot update completed or cancelled commissions"))
     }
 
@@ -278,7 +280,7 @@ class CommissionController {
   })
 
   public getMyCommissions: RequestHandler = asyncCatch(async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user?.id
+    const userId = (req.user as UserShape)?.id
     const { type = "all" } = req.query // 'broker', 'customer', or 'all'
 
     if (!userId) {
@@ -363,8 +365,8 @@ class CommissionController {
       Commission.findAll({
         where: { ...whereClause, status: "completed" },
         attributes: [
-          [Commission.sequelize.fn("SUM", Commission.sequelize.col("commissionAmount")), "totalCommissionAmount"],
-          [Commission.sequelize.fn("SUM", Commission.sequelize.col("totalAmount")), "totalTransactionValue"],
+          [sequelize.fn("SUM", sequelize.col("commissionAmount")), "totalCommissionAmount"],
+          [sequelize!.fn("SUM", sequelize.col("totalAmount")), "totalTransactionValue"],
         ],
         raw: true,
       }),
@@ -374,8 +376,8 @@ class CommissionController {
       totalCommissions,
       completedCommissions,
       pendingCommissions,
-      totalCommissionAmount: Number(totalStats[0]?.totalCommissionAmount || 0),
-      totalTransactionValue: Number(totalStats[0]?.totalTransactionValue || 0),
+      totalCommissionAmount: Number(totalStats[0]?.commissionAmount || 0),
+      totalTransactionValue: Number(totalStats[0]?.totalAmount || 0),
     }
 
     return ServiceResponse.success("Commission statistics retrieved successfully!", stats, res)

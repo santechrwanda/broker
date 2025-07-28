@@ -4,6 +4,7 @@ import { asyncCatch, ErrorHandler } from "@/common/middleware/errorHandler"
 import type { Request, Response, NextFunction, RequestHandler } from "express"
 import { Op } from "sequelize"
 import User from "@/common/models/users"
+import type { User as UserShape } from "../user/user.schema";
 
 class CompanyController {
   public createCompany: RequestHandler = asyncCatch(async (req: Request, res: Response, next: NextFunction) => {
@@ -26,7 +27,7 @@ class CompanyController {
     }
 
     // Get the user who is registering the company (if authenticated)
-    const registeredBy = req.user?.id || null
+    const registeredBy = (req.user as UserShape)?.id || null
 
     const { dataValues: company } = await Company.create({
       companyName,
@@ -154,7 +155,7 @@ class CompanyController {
   })
 
   public getMyCompanies: RequestHandler = asyncCatch(async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user?.id
+    const userId = (req.user as UserShape)?.id
 
     if (!userId) {
       return next(ErrorHandler.BadRequest("User not authenticated"))

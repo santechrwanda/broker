@@ -43,6 +43,7 @@ class UserController {
 
   public allUsers: RequestHandler = asyncCatch(async (req: Request, res: Response, next: NextFunction) => {
     const { search } = req.query
+    console.log(req.user)
     const whereClause = search
       ? {
           [Op.or]: [{ name: { [Op.iLike]: `%${search}%` } }, { email: { [Op.iLike]: `%${search}%` } }],

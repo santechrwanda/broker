@@ -1,9 +1,12 @@
-import { DataTypes } from "sequelize"
+import { DataTypes, Model } from "sequelize"
 import sequelize from "../config/database"
 import User from "./users"
 import Company from "./company"
+import { CommissionAttributes } from "../utils/types"
 
-const Commission = sequelize.define("Commission", {
+export interface CommissionInstance extends Model<CommissionAttributes>, CommissionAttributes {}
+
+const Commission = sequelize.define<CommissionInstance>("Commission", {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,

@@ -1,10 +1,11 @@
 import express, { type Router } from "express"
 import { userController } from "@/api/user/user.controller"
 import { uploadProfileImage } from "@/common/middleware/multer"
+import passport from "passport"
 
 const userRoutes: Router = express.Router()
 
-userRoutes.get("/", userController.allUsers)
+userRoutes.get("/", passport.authenticate("jwt", { session: false }),  userController.allUsers)
 userRoutes.post("/", uploadProfileImage, userController.createUser)
 userRoutes.put("/:id", uploadProfileImage, userController.updateUser)
 userRoutes.delete("/:id", userController.deleteUser)

@@ -34,7 +34,7 @@ export function createApiFormDataBody(schema: z.ZodTypeAny, fileFields: string[]
     Object.keys(schema._def.shape()).forEach((key) => {
       const field = schema._def.shape()[key]
       schemaProperties[key] = {
-        type: "string",
+        type: "string" as const,
         description: `${key} field`,
       }
     })
@@ -53,7 +53,7 @@ export function createApiFormDataBody(schema: z.ZodTypeAny, fileFields: string[]
     content: {
       "multipart/form-data": {
         schema: {
-          type: "object",
+          type: "object" as const,
           properties: schemaProperties,
         },
       },

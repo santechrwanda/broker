@@ -1,41 +1,44 @@
 import { Sequelize } from "sequelize";
-import dotenv from "dotenv";
-import logger from "./logger";
+import logger from "@/common/config/logger";
+import { env } from "@/common/config/envConfig";
 
-dotenv.config();
+const isDevelopment = env.isDevelopment;
 
-if(!process.env.DB_PORT || !process.env.DB_USER || !process.env.DB_NAME){
-    throw new Error("These environments are necessary.")
+// Build Sequelize options
+const sequelizeOptions: any = {
+  host: env.DB_HOST,
+  port: Number(env.DB_PORT || "3306"),
+  dialect: "mysql",
+  logging: false,
+};
+
+// Add dialectOptions only if NOT in development
+if (!isDevelopment) {
+  sequelizeOptions.dialectOptions = {
+    ssl: {
+      rejectUnauthorized: true,
+    },
+  };
 }
 
+// Initialize Sequelize instance
 const sequelize = new Sequelize(
-  process.env.DB_NAME || "",
-  process.env.DB_USER || "",
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT || "3306"),
-    dialect: "mysql",
-    // dialectOptions: {
-    //   ssl: {
-    //     rejectUnauthorized: true,
-    //   },
-    // },
-    logging: false,
-  }
+  env.DB_NAME || "",
+  env.DB_USER || "",
+  env.DB_PASSWORD,
+  sequelizeOptions
 );
 
+// Connection initializer
 export const initializeDatabase = async () => {
   try {
     await sequelize.authenticate();
     await sequelize.sync({ alter: true });
-    logger.info(
-      "Connection to the database has been established successfully."
-    );
+    logger.info("Connection to the database has been established successfully.");
   } catch (error) {
-    console.log(error);
+    console.error(error);
     logger.error("Unable to connect to the database:", error);
-    process.exit(1); // Exit the process with failure
+    process.exit(1);
   }
 };
 

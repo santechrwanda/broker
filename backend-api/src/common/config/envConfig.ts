@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { cleanEnv, str, port, num, email } from "envalid";
 
-dotenv.config({ path: ".env" });
+dotenv.config();
 
 export const env = cleanEnv(process.env, {
     NODE_ENV: str({ choices: ["development", "production", "test"], default: "development" }),
@@ -20,6 +20,11 @@ export const env = cleanEnv(process.env, {
     JWT_EXPIRES_TIME: str({ default: "1d" }),
     GOOGLE_CLIENT_ID: str(),
     GOOGLE_CLIENT_SECRET: str(),
+    DB_NAME: str(),
+    DB_USER: str(), 
+    DB_PASSWORD: str(), 
+    DB_HOST: str(),
+    DB_PORT: num()
 });
 
 export const envConfig = {
