@@ -1,39 +1,54 @@
-import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
-import { createApiReqestBody, createApiResponse } from "@/api-docs/openAPIResponseBuilders";
-import { StatusCodes } from "http-status-codes";
-import { UserSchema } from "./user.schema";
-import { z } from "zod";
+import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi"
+import { createApiReqestBody, createApiResponse, createApiFormDataBody } from "@/api-docs/openAPIResponseBuilders"
+import { StatusCodes } from "http-status-codes"
+import { UserSchema, CreateUserSchema, UpdateUserSchema, UserStatusSchema, ImportUsersSchema } from "./user.schema"
+import { z } from "zod"
 
-export const userRegistry = new OpenAPIRegistry();
+export const userRegistry = new OpenAPIRegistry()
 
+// Create user with file upload
 userRegistry.registerPath({
   method: "post",
   path: "/api/users",
   tags: ["User"],
   request: {
-    body: createApiReqestBody(UserSchema),
+    body: createApiFormDataBody(CreateUserSchema, ["profile"]),
   },
   responses: createApiResponse(UserSchema, "User created", StatusCodes.CREATED),
-});
+})
 
+// Get all users
 userRegistry.registerPath({
   method: "get",
   path: "/api/users",
   tags: ["User"],
-  responses: createApiResponse(UserSchema, "Users retrieved", StatusCodes.OK),
-});
+  parameters: [
+    {
+      name: "search",
+      in: "query",
+      description: "Search users by name or email",
+      required: false,
+      schema: {
+        type: "string",
+      },
+    },
+  ],
+  responses: createApiResponse(z.array(UserSchema), "Users retrieved", StatusCodes.OK),
+})
 
+// Update user with file upload
 userRegistry.registerPath({
   method: "put",
   path: "/api/users/{id}",
   tags: ["User"],
   request: {
     params: z.object({ id: z.string() }),
-    body: createApiReqestBody(UserSchema.partial()),
+    body: createApiFormDataBody(UpdateUserSchema, ["profile"]),
   },
   responses: createApiResponse(UserSchema, "User updated", StatusCodes.OK),
-});
+})
 
+// Delete user
 userRegistry.registerPath({
   method: "delete",
   path: "/api/users/{id}",
@@ -42,25 +57,27 @@ userRegistry.registerPath({
     params: z.object({ id: z.string() }),
   },
   responses: createApiResponse(z.object({}), "User deleted", StatusCodes.OK),
-});
+})
 
+// Update user status
 userRegistry.registerPath({
   method: "patch",
   path: "/api/users/{id}/status",
   tags: ["User"],
   request: {
     params: z.object({ id: z.string() }),
-    body: createApiReqestBody(z.object({ status: z.enum(["active", "blocked"]) })),
+    body: createApiReqestBody(UserStatusSchema),
   },
   responses: createApiResponse(UserSchema, "User status updated", StatusCodes.OK),
-});
+})
 
+// Import users
 userRegistry.registerPath({
   method: "post",
   path: "/api/users/import",
   tags: ["User"],
   request: {
-    body: createApiReqestBody(z.object({ users: z.array(UserSchema) })),
+    body: createApiReqestBody(ImportUsersSchema),
   },
   responses: createApiResponse(z.array(UserSchema), "Users imported", StatusCodes.CREATED),
-});
+})

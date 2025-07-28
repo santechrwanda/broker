@@ -53,11 +53,12 @@ const usersApi = backendApi.injectEndpoints({
       transformResponse: (response: { result: UserShape[] }) => response.result,
       providesTags: ["Users"],
     }),
-    createUser: builder.mutation<User, CreateUserRequest>({
+    createUser: builder.mutation<User, FormData>({
       query: (body) => ({
         url: "/api/users",
         method: "POST",
         body,
+        credentials: "include"
       }),
       invalidatesTags: ["Users"],
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
@@ -83,6 +84,7 @@ const usersApi = backendApi.injectEndpoints({
           url: "/api/users/import",
           method: "POST",
           body,
+          credentials: "include"
         }),
         invalidatesTags: ["Users"],
         async onQueryStarted(args, { dispatch, queryFulfilled }) {
@@ -98,12 +100,14 @@ const usersApi = backendApi.injectEndpoints({
           }
         },
       }),
-    updateUser: builder.mutation<User, UpdateUserRequest>({
-      query: ({ id, ...body }) => ({
+    updateUser: builder.mutation<{result: User }, { id: string; form: FormData }>({
+      query: ({ id, form }) =>({
         url: `/api/users/${id}`,
         method: "PUT",
-        body,
+        body: form,
+        credentials: "include"
       }),
+      invalidatesTags: ["Users"],
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
@@ -113,6 +117,7 @@ const usersApi = backendApi.injectEndpoints({
               if (!draft) return;
               const idx = draft.findIndex((u) => u.id === id);
               if (idx !== -1) draft[idx] = data.result;
+              return draft;
             })
           );
         } catch (err) {
@@ -124,6 +129,7 @@ const usersApi = backendApi.injectEndpoints({
       query: ({ id }) => ({
         url: `/api/users/${id}`,
         method: "DELETE",
+        credentials: "include"
       }),
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
@@ -134,6 +140,7 @@ const usersApi = backendApi.injectEndpoints({
               if (!draft) return;
               const idx = draft.findIndex((u) => u.id === id);
               if (idx !== -1) draft.splice(idx, 1);
+              return draft
             })
           );
         } catch (err) {
@@ -146,6 +153,7 @@ const usersApi = backendApi.injectEndpoints({
         url: `/api/users/${id}/status`,
         method: "PATCH",
         body: { status },
+        credentials: "include"
       }),
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
@@ -156,6 +164,7 @@ const usersApi = backendApi.injectEndpoints({
               if (!draft) return;
               const idx = draft.findIndex((u) => u.id === id);
               if (idx !== -1) draft[idx] = data.result;
+              return draft;
             })
           );
         } catch (err) {

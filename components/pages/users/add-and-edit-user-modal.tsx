@@ -1,32 +1,54 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { SelectDropdown } from "@/components/ui/select";
-import { FiX, FiUser, FiCamera, FiPlus } from "react-icons/fi";
+import { FiX, FiUser, FiCamera } from "react-icons/fi";
 import Image from "next/image";
-import { useCreateUserMutation } from "@/hooks/use-users";
+import {
+  useCreateUserMutation,
+  useUpdateUserMutation,
+} from "@/hooks/use-users";
 import { CURRENTCY } from "@/utility/constants";
 import { toast } from "react-toastify";
 import { UserShape } from "./users-list";
 
 interface UpdateProps {
-    user?: UserShape,
-    isUpdateOpen?: boolean
+  user?: UserShape | null;
+  setUser?: (user: UserShape | undefined)=> void;
+  isOpen: boolean;
+  setIsOpen?: (bol: boolean) => void;
 }
-export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function AddAndEditUserModal({
+  user,
+  setUser,
+  isOpen,
+  setIsOpen,
+}: UpdateProps) {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    commission: "",
-    salary: "",
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+    commission: user?.commission || "",
+    salary: user?.salary || "",
   });
-  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedRole, setSelectedRole] = useState(user?.role || "");
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(user?.profile || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [createUser, { isLoading, error, isSuccess }] = useCreateUserMutation();
+  const [
+    createUser,
+    {
+      isLoading: isCreating,
+      error: createError,
+      isSuccess: isCreateSuccess,
+      reset: resetCreate,
+    },
+  ] = useCreateUserMutation();
+
+  const [
+    updateUser,
+    { isLoading: isUpdating, error: updateError, reset: resetUpdate },
+  ] = useUpdateUserMutation();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,27 +58,7 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
     }));
   };
 
-  useEffect(()=> {
-    if(user){
-        setFormData({
-            address: user.address || "",
-            commission: user.commission || "",
-            email: user.email,
-            name: user.name,
-            phone: user?.phone || "",
-            salary:  user.salary || ""
-        })
-    }
-  }, [user])
-
-  useEffect(()=> {
-    if(isUpdateOpen){
-        setIsOpen(true);
-    }
-  }, [isUpdateOpen])
-
   const handleClose = () => {
-    setIsOpen(false);
     setProfileImage(null);
     setProfilePreview(null);
     setFormData({
@@ -68,38 +70,70 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
       salary: "",
     });
     setSelectedRole("");
+    setUser?.(undefined);
+    setIsOpen?.(false);
   };
 
-  const handleAddContact = async(event: any) => {
+  const handleAddOrUpdateUser = async (event: any) => {
     event.preventDefault();
 
-    console.log(profileImage);
-    // Prepare payload
-    const payload: any = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      role: selectedRole,
-      status: "ACTIVE",
-    };
+    const form = new FormData();
+    form.append("name", formData.name);
+    form.append("email", formData.email);
+    form.append("phone", formData.phone);
+    form.append("address", formData.address);
+    form.append("role", selectedRole);
+    form.append("status", "active");
+
     if (selectedRole === "agent") {
-      payload.commission = formData.commission;
+      form.append("commission", formData.commission || "0.0");
+      form.append("salary", "0.0");
     } else {
-      payload.salary = formData.salary;
+      form.append("salary", formData.salary || "0.0");
+      form.append("commission", "0.0");
     }
 
-    await createUser(payload).unwrap();
-    handleClose();
+    // Add image if selected
+    if (profileImage) {
+      form.append("profile", profileImage);
+    }
+
+    try {
+      if (user && user.id) {
+        await updateUser({ id: user.id, form }).unwrap();
+        toast.success("User Updated Successfully");
+      } else {
+        await createUser(form).unwrap();
+      }
+      handleClose();
+    } catch (error) {
+      console.error("Failed to save user", error);
+    }
   };
 
   useEffect(() => {
-    if (error)
-      toast.error((error as any)?.data?.message || "Failed to register user.");
-  }, [error]);
+    if (createError) {
+      toast.error(
+        (createError as any)?.data?.message || "Failed to register user."
+      );
+      resetCreate();
+    }
+    if (updateError) {
+      toast.error(
+        (updateError as any)?.data?.message || "Failed to update user."
+      );
+      resetUpdate();
+    }
+  }, [createError, updateError, resetCreate, resetUpdate]);
 
   useEffect(() => {
-    if (isSuccess) toast.success("User Registered Successfully");
-  }, [isSuccess]);
+    if (isCreateSuccess) {
+      toast.success("User Registered Successfully");
+
+      resetCreate();
+    }
+  }, [isCreateSuccess, resetCreate]);
+
 
   const handleCameraClick = () => {
     fileInputRef.current?.click();
@@ -113,38 +147,27 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
     }
   };
 
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="flex items-center cursor-pointer gap-2 px-4 py-1.5 bg-[#1b7b95] text-white rounded-lg hover:bg-[#004f64]"
-      >
-        <FiPlus />
-        Add User
-      </button>
-    );
-  }
-
   const userRoles = [
     { label: "Admin", value: "admin" },
     { label: "Teller", value: "teller" },
     { label: "Accountant", value: "accountant" },
     { label: "Client", value: "client" },
     { label: "Manager", value: "manager" },
-    { label: "Agent", value: "agent" },
-    { label: "Company", value: "company" },
+    { label: "Agent", value: "agent" }
   ];
+
+  if(!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50">
       <form
-        onSubmit={handleAddContact}
+        onSubmit={handleAddOrUpdateUser}
         className="bg-white rounded-lg shadow-xl w-full max-w-lg"
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between bg-[#2093b3]/10 p-3 border-b border-gray-200">
           <h2 className="text-base font-semibold text-gray-900">
-            Add New User
+            {user? "Update user info." : "Add new user"}
           </h2>
           <button
             onClick={handleClose}
@@ -207,7 +230,7 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Enter name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
+                  className="w-full px-3 text-gray-900 py-2 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
                   required
                 />
               </div>
@@ -219,6 +242,7 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
                   onChange={setSelectedRole}
                   placeholder="select user role"
                   className="w-full"
+                  labelClassName="mb-1"
                 />
               </div>
             </div>
@@ -234,7 +258,7 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="Enter email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
+                className="w-full px-3 text-gray-900 py-2 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
                 required
               />
             </div>
@@ -251,7 +275,7 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="Enter phone no"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
+                  className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
                 />
               </div>
               <div>
@@ -264,7 +288,7 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
                   value={formData.address}
                   onChange={handleInputChange}
                   placeholder="KG 33 Ave"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
+                  className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
                 />
               </div>
             </div>
@@ -281,7 +305,7 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
                   value={formData.commission}
                   onChange={handleInputChange}
                   placeholder="Enter commission"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
+                  className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
                 />
               </div>
             ) : (
@@ -295,7 +319,7 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
                   value={formData.salary}
                   onChange={handleInputChange}
                   placeholder="Enter salary"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
+                  className="w-full px-3 py-2 border text-gray-900 border-gray-300 rounded-md focus:outline-none placeholder-gray-400"
                 />
               </div>
             )}
@@ -308,16 +332,22 @@ export default function AddContactModal({ user, isUpdateOpen}: UpdateProps) {
             onClick={handleClose}
             type="button"
             className="px-5 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors font-medium"
-            disabled={isLoading}
+            disabled={isCreating || isUpdating}
           >
             Close
           </button>
           <button
             type="submit"
             className="px-4 py-2 cursor-pointer bg-[#1b7b95] hover:bg-[#004f64] text-white rounded-md transition-colors font-medium"
-            disabled={isLoading}
+            disabled={isCreating || isUpdating}
           >
-            {isLoading ? "Registering..." : "Register user"}
+            {user
+              ? isUpdating
+                ? "Updating..."
+                : "Update user"
+              : isCreating
+              ? "Registering..."
+              : "Register user"}
           </button>
         </div>
       </form>

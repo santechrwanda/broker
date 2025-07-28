@@ -13,7 +13,8 @@ const User = sequelize.define("User", {
         allowNull: false,
         validate: {
             notEmpty: true,
-        }
+        },
+        comment: "Name field is required."
     },
     email: {
         type: DataTypes.STRING,
@@ -22,12 +23,13 @@ const User = sequelize.define("User", {
         validate: {
             isEmail: true,
         },
+        comment: "Email field is required."
     },
     address: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    phone_number: {
+    phone: {
         type: DataTypes.STRING,
         allowNull: true,
         validate: {
@@ -35,7 +37,7 @@ const User = sequelize.define("User", {
         },
     },
     role: {
-        type: DataTypes.ENUM("client", "admin", "teller", "agent", "manager"),
+        type: DataTypes.ENUM("client", "admin", "teller", "agent", "manager", "accountant", "company"),
         defaultValue: "client",
         allowNull: false,
     },
@@ -61,6 +63,42 @@ const User = sequelize.define("User", {
         allowNull: true,
     },
 
+    // New fields:
+    salary: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        validate: {
+            min: 0,
+        },
+    },
+    commission: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        validate: {
+            min: 0,
+            max: 100,
+        },
+        comment: "Percentage value (e.g., 5 for 5%)",
+    },
+    profile: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+      isCustomUrl(value: string) {
+        if (
+          value &&
+          !/^https?:\/\/(localhost|127\.0\.0\.1|\S+\.\S+)(:\d+)?(\/\S*)?$/.test(
+            value
+          )
+        ) {
+          throw new Error(
+            "Profile must be a valid URL including localhost or domain."
+          );
+        }
+      },
+    },
+        comment: "The profile Image should be correct url link."
+    }
 });
 
 export default User;

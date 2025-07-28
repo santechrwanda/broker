@@ -12,13 +12,13 @@ class AuthenticationController {
   public registerUser: RequestHandler = asyncCatch(
     async (_req: Request, res: Response) => {
       const hashedPassword = await getHash(_req.body.password);
-      const { name, email, address, phone_number } = _req.body;
+      const { name, email, address, phone } = _req.body;
 
       const { dataValues: user } = await User.create({
         name,
         email,
         address,
-        phone_number,
+        phone,
         role: "client",
         password: hashedPassword,
       });

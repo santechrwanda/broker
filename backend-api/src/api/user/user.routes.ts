@@ -1,13 +1,14 @@
-import express, { Router } from "express";
-import { userController } from "@/api/user/user.controller";
+import express, { type Router } from "express"
+import { userController } from "@/api/user/user.controller"
+import { uploadProfileImage } from "@/common/middleware/multer"
 
-const userRoutes: Router = express.Router();
+const userRoutes: Router = express.Router()
 
-userRoutes.get("/", userController.allUsers);
-userRoutes.post("/", userController.createUser);
-userRoutes.put("/:id", userController.updateUser);
-userRoutes.delete("/:id", userController.deleteUser);
-userRoutes.patch("/:id/status", userController.changeUserStatus);
-userRoutes.post("/import", userController.importUsers);
+userRoutes.get("/", userController.allUsers)
+userRoutes.post("/", uploadProfileImage, userController.createUser)
+userRoutes.put("/:id", uploadProfileImage, userController.updateUser)
+userRoutes.delete("/:id", userController.deleteUser)
+userRoutes.patch("/:id/status", userController.changeUserStatus)
+userRoutes.post("/import", userController.importUsers)
 
-export { userRoutes };
+export { userRoutes }

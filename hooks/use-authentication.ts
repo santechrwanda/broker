@@ -1,3 +1,4 @@
+import { UserShape } from "@/components/pages/users/users-list";
 import backendApi from "./backend-api";
 
 // Define types for request bodies
@@ -33,16 +34,6 @@ export interface AuthResponse {
   };
 }
 
-export interface LoggedUser {
-  id: string;
-  email: string;
-  name?: string;
-  role: string;
-  phone_number?: string;
-  address?: string;
-  createdAt: string;
-}
-
 const authenticationApi = backendApi.injectEndpoints({
   endpoints: (builder) => ({
     registerUser: builder.mutation<AuthResponse, RegisterUserRequest>({
@@ -54,14 +45,14 @@ const authenticationApi = backendApi.injectEndpoints({
       }),
       invalidatesTags: ["LoggedUser"],
     }),
-    loginUser: builder.mutation<LoggedUser, LoginUserRequest>({
+    loginUser: builder.mutation<UserShape, LoginUserRequest>({
       query: (body) => ({
         url: "/api/credentials-login",
         method: "POST",
         body,
         credentials: "include",
       }),
-      transformResponse: (response: { result: LoggedUser }) => response.result,
+      transformResponse: (response: { result: UserShape }) => response.result,
       invalidatesTags: ["LoggedUser"],
     }),
     forgotPassword: builder.mutation<AuthResponse, ForgotPasswordRequest>({
@@ -94,7 +85,7 @@ const authenticationApi = backendApi.injectEndpoints({
             authenticationApi.util.updateQueryData(
               "getLoggedUser",
               undefined,
-              () => null as unknown as LoggedUser // forcefully clear the state
+              () => null as unknown as UserShape // forcefully clear the state
             )
           );
         } catch (error) {
@@ -103,13 +94,13 @@ const authenticationApi = backendApi.injectEndpoints({
       },
     }),
 
-    getLoggedUser: builder.query<LoggedUser, void>({
+    getLoggedUser: builder.query<UserShape, void>({
       query: () => ({
         url: "/api/me",
         method: "GET",
         credentials: "include",
       }),
-      transformResponse: (response: { result: LoggedUser }) => response.result,
+      transformResponse: (response: { result: UserShape }) => response.result,
       providesTags: ["LoggedUser"],
     }),
   }),
