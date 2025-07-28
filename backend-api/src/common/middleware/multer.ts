@@ -1,7 +1,6 @@
 import multer from "multer";
 import path from "path";
-import fs from "fs";
-import type { Express, RequestHandler } from "express"; // <-- import RequestHandler
+import type { RequestHandler } from "express"; // <-- import RequestHandler
 
 // Ensure assets directory exists
 const assetsDir = path.join("assets");

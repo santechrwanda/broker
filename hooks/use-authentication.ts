@@ -60,6 +60,7 @@ const authenticationApi = backendApi.injectEndpoints({
         url: "/api/forgot-password",
         method: "POST",
         body,
+        credentials: "include"
       }),
     }),
     resetPassword: builder.mutation<AuthResponse, ResetPasswordRequest>({
@@ -67,6 +68,7 @@ const authenticationApi = backendApi.injectEndpoints({
         url: `/api/reset-password/${resetCode}`,
         method: "POST",
         body: { password },
+        credentials: "include",
       }),
     }),
     logoutUser: builder.mutation<AuthResponse, void>({
