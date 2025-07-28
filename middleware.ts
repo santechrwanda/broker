@@ -24,6 +24,7 @@ export async function middleware(req: NextRequest) {
 
     // --- Your custom middleware logic below ---
     const token = req.cookies.get("auth_token")?.value;
+    console.log(token);
     const { nextUrl } = req;
 
     let role: string | undefined;
