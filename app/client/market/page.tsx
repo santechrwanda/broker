@@ -1,7 +1,7 @@
 "use client";
 
 import SecuritySummary from "@/components/pages/market/security-summar";
-import SecuritiesTable from "@/components/pages/market/security-table";
+import SecuritiesTable from "@/components/pages/market/market-table";
 import { FiTrendingUp } from "react-icons/fi";
 import { IoShareSocialOutline } from "react-icons/io5";
 

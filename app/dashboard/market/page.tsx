@@ -1,17 +1,23 @@
-import CommisionTable from "@/components/pages/market/commission-table";
-import ExportCommissions from "@/components/pages/market/export-commissions";
-import SecuritySummary from "@/components/pages/market/security-summar";
-import SecuritiesTable from "@/components/pages/market/security-table";
+"use client"
 
-const SecuritiesPage: React.FC = () => {
+import Breadcrumb from "@/components/ui/breadcrum"
+import { MarketTable } from "@/components/pages/market/market-table"
+import SecuritySummary from "@/components/pages/market/security-summar"
+
+const MarketPage = () => {
   return (
-    <div>
-      <SecuritySummary />
-      <CommisionTable />
-      <ExportCommissions />
-      <SecuritiesTable />
+    <div className="flex flex-col gap-5">
+      <Breadcrumb
+        items={[
+          { label: "Dashboard", path: "/dashboard" },
+          { label: "Market", path: "/dashboard/market" },
+        ]}
+      />
+      <h2 className="text-2xl font-bold text-gray-800">Market Overview</h2>
+      <SecuritySummary /> {/* Statistics cards for market */}
+      <MarketTable />
     </div>
-  );
-};
+  )
+}
 
-export default SecuritiesPage;
+export default MarketPage

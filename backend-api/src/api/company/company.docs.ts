@@ -26,7 +26,7 @@ companyRegistry.registerPath({
     {
       name: "search",
       in: "query",
-      description: "Search companies by name, owner name, or email",
+      description: "Search companies by name, security symbol, owner name, or email",
       required: false,
       schema: {
         type: "string",
@@ -88,7 +88,7 @@ companyRegistry.registerPath({
     params: z.object({ id: z.string() }),
     body: createApiFormDataBody(UpdateCompanySchema, ["companyLogo"]),
   },
-  responses: createApiResponse(CompanySchema, "Company updated successfully", StatusCodes.OK),
+  responses: createApiResponse(CompanySchema, "Company updated", StatusCodes.OK),
 })
 
 // Delete company
@@ -99,7 +99,7 @@ companyRegistry.registerPath({
   request: {
     params: z.object({ id: z.string() }),
   },
-  responses: createApiResponse(z.object({}), "Company deleted successfully", StatusCodes.OK),
+  responses: createApiResponse(z.object({}), "Company deleted", StatusCodes.OK),
 })
 
 // Update company status
@@ -111,7 +111,7 @@ companyRegistry.registerPath({
     params: z.object({ id: z.string() }),
     body: createApiReqestBody(CompanyStatusSchema),
   },
-  responses: createApiResponse(CompanySchema, "Company status updated successfully", StatusCodes.OK),
+  responses: createApiResponse(CompanySchema, "Company status updated", StatusCodes.OK),
 })
 
 // Get my companies (authenticated user's companies)

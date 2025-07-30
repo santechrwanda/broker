@@ -1,11 +1,26 @@
-import React from "react";
-import { CustomDropdown, DropdownItem } from "../ui/dropdown";
-import { HiDotsHorizontal } from "react-icons/hi";
-import { LuPencil } from "react-icons/lu";
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { FiEye, FiRefreshCw, FiMessageSquare } from "react-icons/fi";
+"use client"
+import { CustomDropdown, DropdownItem } from "../ui/dropdown"
+import { HiDotsHorizontal } from "react-icons/hi"
+import { LuPencil } from "react-icons/lu"
+import { RiDeleteBin5Line } from "react-icons/ri"
+import { FiEye, FiRefreshCw, FiMessageSquare } from "react-icons/fi"
+import type { Commission } from "@/hooks/use-commissions"
 
-const CommisionsActionsDropdown = () => {
+interface CommisionsActionsDropdownProps {
+  commission: Commission
+  onEdit: (commission: Commission) => void
+  onDelete: (commission: Commission) => void
+  onChangeStatus: (commission: Commission) => void
+  onViewDetails: (commission: Commission) => void
+}
+
+const CommisionsActionsDropdown = ({
+  commission,
+  onEdit,
+  onDelete,
+  onChangeStatus,
+  onViewDetails,
+}: CommisionsActionsDropdownProps) => {
   return (
     <CustomDropdown
       trigger={
@@ -16,22 +31,14 @@ const CommisionsActionsDropdown = () => {
       dropdownClassName="min-w-36 rounded-md bg-white shadow-lg ring-1 ring-black/5 py-1"
       position="bottom-right"
     >
-      <DropdownItem
-        icon={<LuPencil className="size-4" />}
-        onClick={() => alert("Edit clicked")}
-      >
+      <DropdownItem icon={<FiEye className="text-blue-600" />} onClick={() => onViewDetails(commission)}>
+        View Details
+      </DropdownItem>
+      <DropdownItem icon={<LuPencil className="size-4" />} onClick={() => onEdit(commission)}>
         Edit
       </DropdownItem>
-      <DropdownItem
-        icon={<FiRefreshCw className="text-yellow-600" />}
-        onClick={() => alert("Change status clicked")}
-      >
+      <DropdownItem icon={<FiRefreshCw className="text-yellow-600" />} onClick={() => onChangeStatus(commission)}>
         Change Status
-      </DropdownItem>
-      <DropdownItem
-        icon={<FiEye className="text-blue-600" />}
-      >
-        View
       </DropdownItem>
       <hr className="my-1 border-gray-200" />
       <DropdownItem
@@ -53,15 +60,11 @@ const CommisionsActionsDropdown = () => {
         Message Customer
       </DropdownItem>
       <hr className="my-1 border-gray-200" />
-      <DropdownItem
-        icon={<RiDeleteBin5Line className="size-4" />}
-        onClick={() => alert("Delete clicked")}
-        destructive
-      >
+      <DropdownItem icon={<RiDeleteBin5Line className="size-4" />} onClick={() => onDelete(commission)} destructive>
         Delete
       </DropdownItem>
     </CustomDropdown>
-  );
-};
+  )
+}
 
-export default CommisionsActionsDropdown;
+export default CommisionsActionsDropdown

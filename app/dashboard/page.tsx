@@ -2,10 +2,8 @@ import QuickCreateDropdown from "@/components/dropdowns/quick-create-dropdown";
 import CustomerChart from "@/components/pages/dashboard/customer-chart";
 import Link from "next/link";
 import React from "react";
-import {
-  FaWallet,
-} from "react-icons/fa";
 import { GoOrganization } from "react-icons/go";
+import { IoWalletOutline } from "react-icons/io5";
 import { PiCurrencyDollarSimple } from "react-icons/pi";
 import { TbUsersGroup } from "react-icons/tb";
 
@@ -97,17 +95,17 @@ const DashboardHome = () => {
           <div className="flex justify-between items-center">
             <div>
               <h4 className="text-sm text-gray-500 font-semibold">
-                MY BALANCE
+                MY SHARES
               </h4>
-              <p className="text-xl font-bold text-[#004f64]">$165.89k</p>
-              <p className="text-gray-400 text-sm mt-1">+0.00%</p>
+              <p className="text-xl font-bold text-[#004f64]">200</p>
+              <p className="text-gray-400 text-sm mt-1">+30</p>
             </div>
             <div className="text-3xl text-[#004f64] bg-[#e8e9f9] p-3 rounded">
-              <FaWallet />
+              <IoWalletOutline />
             </div>
           </div>
           <a href="#" className="text-blue-600 text-sm mt-4 inline-block">
-            Withdraw money
+            Trade shares
           </a>
         </div>
       </div>

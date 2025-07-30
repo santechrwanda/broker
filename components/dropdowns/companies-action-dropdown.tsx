@@ -1,177 +1,191 @@
 "use client"
 
 import { useState } from "react"
-import { CustomDropdown, DropdownItem } from "../ui/dropdown"
-import { HiDotsHorizontal, HiOutlineEye } from "react-icons/hi"
-import { LuPencil } from "react-icons/lu"
-import { FaRegCircleStop, FaRegCircleCheck } from "react-icons/fa6"
-import { RiDeleteBin5Line } from "react-icons/ri"
-import { useUpdateCompanyStatusMutation, type Company } from "@/hooks/use-company"
 import { useRouter } from "next/navigation"
+import {
+  HiOutlineDotsVertical,
+  HiOutlineEye,
+  HiOutlineDocumentText,
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlineCheck,
+  HiOutlineX,
+  HiOutlineClock,
+  HiDotsHorizontal,
+} from "react-icons/hi"
+import { useUpdateCompanyStatusMutation, type Company } from "@/hooks/use-company"
 import { toast } from "react-toastify"
-import ConfirmDeleteCompanyModal from "../pages/companies/confirm-delete-company-modal"
+import ConfirmDeleteCompanyModal from "@/components/pages/companies/confirm-delete-company-modal"
+import CompanyDetailsModal from "../pages/companies/company-details-modal"
 
-interface CompanyDropdownProps {
-  setSelectedCompany: (company: Company) => void
+interface CompaniesActionsDropdownProps {
   company: Company
 }
 
-const CompaniesActionsDropdown = ({ setSelectedCompany, company }: CompanyDropdownProps) => {
+const CompaniesActionsDropdown = ({ company }: CompaniesActionsDropdownProps) => {
   const router = useRouter()
   const [updateCompanyStatus, { isLoading: isUpdatingStatus }] = useUpdateCompanyStatusMutation()
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false)
 
-  const handleView = () => {
-    setSelectedCompany(company)
+  const handleStatusChange = async (newStatus: Company["status"]) => {
+    try {
+      await updateCompanyStatus({ id: company.id, status: newStatus }).unwrap()
+      toast.success(`Company status updated to ${newStatus}`)
+      setIsOpen(false)
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || error?.message || "Failed to update status"
+      toast.error(`Failed to update status: ${errorMessage}`)
+    }
+  }
+
+  const handleViewDetails = () => {
+    // This will be handled by the parent component's onViewDetails
+    setIsOpen(false)
+    setIsViewDetailsOpen(true);
+  }
+
+  const handleCloseDails = ()=> {
+    setIsViewDetailsOpen(false);
+  }
+
+  const handleViewDocuments = () => {
+    router.push(`/dashboard/companies/documents/${company.id}`)
+    setIsOpen(false)
   }
 
   const handleEdit = () => {
     router.push(`/dashboard/companies/edit-company/${company.id}`)
-  }
-
-  const handleStatusChange = async (newStatus: Company["status"]) => {
-    try {
-      const result = await updateCompanyStatus({
-        id: company.id,
-        status: newStatus,
-      }).unwrap()
-
-      if (result.success) {
-        const statusText =
-          newStatus === "approved" ? "approved" : newStatus === "rejected" ? "rejected" : "set to pending"
-        toast.success(`Company "${company.companyName}" has been ${statusText}`)
-      }
-    } catch (err: any) {
-      const errorMessage = err?.data?.message || err?.message || "Failed to update company status"
-      toast.error(errorMessage)
-      console.error("Error updating company status:", err)
-    }
-  }
-
-  const handleApprove = () => {
-    if (company.status !== "approved") {
-      handleStatusChange("approved")
-    }
-  }
-
-  const handleReject = () => {
-    if (company.status !== "rejected") {
-      handleStatusChange("rejected")
-    }
-  }
-
-  const handleDeactivate = () => {
-    if (company.status !== "pending") {
-      handleStatusChange("pending")
-    }
+    setIsOpen(false)
   }
 
   const handleDelete = () => {
-    setShowDeleteModal(true)
+    setIsDeleteModalOpen(true)
+    setIsOpen(false)
   }
 
-  const getStatusAction = () => {
-    switch (company.status) {
-      case "pending":
-        return (
-          <>
-            <DropdownItem
-              icon={<FaRegCircleCheck className="size-4" />}
-              onClick={handleApprove}
-              disabled={isUpdatingStatus}
-              className="text-green-600"
-            >
-              {isUpdatingStatus ? "Updating..." : "Approve"}
-            </DropdownItem>
-            <DropdownItem
-              icon={<FaRegCircleStop className="size-4" />}
-              onClick={handleReject}
-              disabled={isUpdatingStatus}
-              className="text-red-600"
-            >
-              {isUpdatingStatus ? "Updating..." : "Reject"}
-            </DropdownItem>
-          </>
-        )
-      case "approved":
-        return (
-          <>
-            <DropdownItem
-              icon={<FaRegCircleStop className="size-4" />}
-              onClick={handleDeactivate}
-              disabled={isUpdatingStatus}
-              className="text-yellow-600"
-            >
-              {isUpdatingStatus ? "Updating..." : "Set to Pending"}
-            </DropdownItem>
-            <DropdownItem
-              icon={<FaRegCircleStop className="size-4" />}
-              onClick={handleReject}
-              disabled={isUpdatingStatus}
-              className="text-red-600"
-            >
-              {isUpdatingStatus ? "Updating..." : "Reject"}
-            </DropdownItem>
-          </>
-        )
-      case "rejected":
-        return (
-          <>
-            <DropdownItem
-              icon={<FaRegCircleCheck className="size-4" />}
-              onClick={handleApprove}
-              disabled={isUpdatingStatus}
-              className="text-green-600"
-            >
-              {isUpdatingStatus ? "Updating..." : "Approve"}
-            </DropdownItem>
-            <DropdownItem
-              icon={<FaRegCircleStop className="size-4" />}
-              onClick={handleDeactivate}
-              disabled={isUpdatingStatus}
-              className="text-yellow-600"
-            >
-              {isUpdatingStatus ? "Updating..." : "Set to Pending"}
-            </DropdownItem>
-          </>
-        )
-      default:
-        return null
+  const getStatusActions = () => {
+    const actions = []
+
+    if (company.status !== "approved") {
+      actions.push({
+        label: "Approve",
+        icon: HiOutlineCheck,
+        onClick: () => handleStatusChange("approved"),
+        className: "text-green-600 hover:text-green-800",
+      })
     }
+
+    if (company.status !== "rejected") {
+      actions.push({
+        label: "Reject",
+        icon: HiOutlineX,
+        onClick: () => handleStatusChange("rejected"),
+        className: "text-red-600 hover:text-red-800",
+      })
+    }
+
+    if (company.status !== "pending") {
+      actions.push({
+        label: "Set to Pending",
+        icon: HiOutlineClock,
+        onClick: () => handleStatusChange("pending"),
+        className: "text-yellow-600 hover:text-yellow-800",
+      })
+    }
+
+    return actions
   }
 
   return (
     <>
-      <CustomDropdown
-        trigger={
-          <button className="inline-flex items-center rounded cursor-pointer bg-[#3091ac]/30 px-4 py-2 text-sm text-gray-800">
+      <div className="relative">
+          <button className="inline-flex items-center rounded cursor-pointer bg-[#3091ac]/30 px-4 py-2 text-sm text-gray-800" onClick={()=> setIsOpen(true)}>
             <HiDotsHorizontal className="size-4" />
           </button>
-        }
-        dropdownClassName="min-w-36 rounded-md bg-white shadow-lg ring-1 ring-black/5 py-1"
-        position="bottom-right"
-      >
-        <DropdownItem icon={<HiOutlineEye className="size-4" />} onClick={handleView}>
-          View
-        </DropdownItem>
-        <DropdownItem icon={<LuPencil className="size-4" />} onClick={handleEdit}>
-          Edit
-        </DropdownItem>
 
-        <hr className="my-1 border-gray-200" />
+        {isOpen && (
+          <>
+            {/* Backdrop */}
+            <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)}></div>
 
-        {/* Status Actions */}
-        {getStatusAction()}
+            {/* Dropdown Menu */}
+            <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black/10 z-20">
+              <div className="py-1">
+                {/* View Details */}
+                <button
+                  onClick={handleViewDetails}
+                  className="flex items-center cursor-pointer w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <HiOutlineEye className="w-4 h-4 mr-3" />
+                  View Details
+                </button>
 
-        <hr className="my-1 border-gray-200" />
+                {/* View Documents */}
+                <button
+                  onClick={handleViewDocuments}
+                  className="flex items-center cursor-pointer w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <HiOutlineDocumentText className="w-4 h-4 mr-3" />
+                  View Documents
+                </button>
 
-        <DropdownItem icon={<RiDeleteBin5Line className="size-4" />} onClick={handleDelete} destructive>
-          Delete
-        </DropdownItem>
-      </CustomDropdown>
+                {/* Edit */}
+                <button
+                  onClick={handleEdit}
+                  className="flex items-center cursor-pointer w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <HiOutlinePencil className="w-4 h-4 mr-3" />
+                  Edit Company
+                </button>
+
+                {/* Divider */}
+                <div className="border-t border-gray-100 my-1"></div>
+
+                {/* Status Actions */}
+                {getStatusActions().map((action, index) => (
+                  <button
+                    key={index}
+                    onClick={action.onClick}
+                    disabled={isUpdatingStatus}
+                    className={`flex items-center cursor-pointer w-full px-4 py-2 text-sm hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${action.className}`}
+                  >
+                    <action.icon className="w-4 h-4 mr-3" />
+                    {isUpdatingStatus ? "Updating..." : action.label}
+                  </button>
+                ))}
+
+                {/* Divider */}
+                <div className="border-t border-gray-100 my-1"></div>
+
+                {/* Delete */}
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center cursor-pointer w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors"
+                >
+                  <HiOutlineTrash className="w-4 h-4 mr-3" />
+                  Delete Company
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Delete Confirmation Modal */}
-      <ConfirmDeleteCompanyModal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} company={company} />
+      <ConfirmDeleteCompanyModal
+        company={company}
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => {
+          // Refresh the page or update the list
+          window.location.reload()
+        }}
+      />
+
+      {/* Company Details Modal */}
+      <CompanyDetailsModal company={company} isOpen={isViewDetailsOpen} onClose={ handleCloseDails } />
     </>
   )
 }

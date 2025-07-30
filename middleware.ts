@@ -23,7 +23,6 @@ const roleRedirects: Record<string, string> = {
 export async function middleware(req: NextRequest) {
 
     // --- Your custom middleware logic below ---
-    console.log(req.cookies);
     const token = req.cookies.get("auth_token")?.value;
     const { nextUrl } = req;
 

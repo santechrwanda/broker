@@ -1,17 +1,20 @@
 "use client"
 
-import { useDeleteCompanyMutation, type Company } from "@/hooks/use-company"
 import { useState } from "react"
+import { HiOutlineX } from "react-icons/hi"
+import { useDeleteCompanyMutation, type Company } from "@/hooks/use-company"
 import { toast } from "react-toastify"
+import { HiOutlineExclamationTriangle } from "react-icons/hi2"
 
 interface ConfirmDeleteCompanyModalProps {
+  company: Company | null
   isOpen: boolean
   onClose: () => void
-  company: Company | null
+  onConfirm?: () => void
 }
 
-const ConfirmDeleteCompanyModal = ({ isOpen, onClose, company }: ConfirmDeleteCompanyModalProps) => {
-  const [deleteCompany, { isLoading: isDeleting }] = useDeleteCompanyMutation()
+const ConfirmDeleteCompanyModal = ({ company, isOpen, onClose, onConfirm }: ConfirmDeleteCompanyModalProps) => {
+  const [deleteCompany, { isLoading }] = useDeleteCompanyMutation()
   const [confirmationText, setConfirmationText] = useState("")
   const [error, setError] = useState("")
 
@@ -19,131 +22,158 @@ const ConfirmDeleteCompanyModal = ({ isOpen, onClose, company }: ConfirmDeleteCo
 
   const handleDelete = async () => {
     if (confirmationText !== company.companyName) {
-      setError("Company name does not match. Please type the exact company name.")
+      setError("Company name doesn't match. Please type the exact company name.")
       return
     }
 
     try {
-      const result = await deleteCompany(company.id).unwrap()
-
-      if (result.success) {
-        toast.success(`Company "${company.companyName}" has been deleted successfully`)
-        onClose()
-        setConfirmationText("")
-        setError("")
-      }
-    } catch (err: any) {
-      const errorMessage = err?.data?.message || err?.message || "Failed to delete company"
-      toast.error(errorMessage)
+      await deleteCompany(company.id).unwrap()
+      toast.success(`Company "${company.companyName}" has been successfully deleted.`)
+      onConfirm?.()
+      onClose()
+      setConfirmationText("")
+      setError("")
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || error?.message || "Failed to delete company"
+      toast.error(`Failed to delete company: ${errorMessage}`)
       setError(errorMessage)
     }
   }
 
   const handleClose = () => {
-    if (!isDeleting) {
+    if (!isLoading) {
       onClose()
       setConfirmationText("")
       setError("")
     }
   }
 
-  const isConfirmationValid = confirmationText === company.companyName
-
   return (
-    <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Delete Company</h3>
-          <button
-            onClick={handleClose}
-            disabled={isDeleting}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        {/* Background overlay */}
+        <div className="fixed inset-0 bg-gray-500/75 transition-opacity z-40" onClick={handleClose}></div>
 
-        {/* Warning Icon */}
-        <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 15.5c-.77.833.192 2.5 1.732 2.5z"
-              />
-            </svg>
+        {/* Modal panel - Increased width for larger screens */}
+        <div className="relative inline-block align-bottom bg-white rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl z-50 mx-auto">
+          <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4 md:px-8 lg:px-10">
+            <div className="sm:flex sm:items-start sm:gap-4">
+              {/* Warning Icon */}
+              <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                <HiOutlineExclamationTriangle className="h-6 w-6 text-red-600" />
+              </div>
+
+              {/* Content Container - Fixed width issues */}
+              <div className="mt-3 text-center sm:mt-0 sm:text-left flex-1 min-w-0">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-4 relative">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900 pr-4">Delete Company</h3>
+                  <button
+                    onClick={handleClose}
+                    disabled={isLoading}
+                    className="flex-shrink-0 bg-white rounded-md text-gray-400 absolute -right-8 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 p-1"
+                  >
+                    <HiOutlineX className="h-6 w-6" />
+                  </button>
+                </div>
+
+                {/* Main Content */}
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-500 leading-relaxed whitespace-normal pr-2">
+                    This action cannot be undone. This will permanently delete the company{" "}
+                    <span className="font-semibold text-gray-900 break-words">"{company.companyName}"</span> and remove
+                    all associated data from our servers.
+                  </p>
+
+                  {/* Warning Box */}
+                  <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <HiOutlineExclamationTriangle className="h-5 w-5 text-red-400" />
+                      </div>
+                      <div className="ml-3 flex-1 min-w-0">
+                        <h3 className="text-sm font-medium text-red-800">Warning</h3>
+                        <div className="mt-2 text-sm text-red-700">
+                          <ul className="list-disc pl-5 space-y-1">
+                            <li>All company information will be permanently deleted</li>
+                            <li>All associated documents and records will be removed</li>
+                            <li>This action cannot be reversed</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Confirmation Input */}
+                  <div className="space-y-2">
+                    <label htmlFor="confirmation" className="block text-sm font-medium text-gray-700">
+                      Please type{" "}
+                      <span className="font-semibold text-red-600 break-words">"{company.companyName}"</span> to
+                      confirm:
+                    </label>
+                    <input
+                      id="confirmation"
+                      type="text"
+                      value={confirmationText}
+                      onChange={(e) => {
+                        setConfirmationText(e.target.value)
+                        setError("")
+                      }}
+                      disabled={isLoading}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
+                      placeholder="Enter company name"
+                    />
+                  </div>
+
+                  {/* Error Message */}
+                  {error && (
+                    <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">{error}</div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="text-center mb-6">
-          <h4 className="text-lg font-medium text-gray-900 mb-2">Are you absolutely sure?</h4>
-          <p className="text-sm text-gray-600 mb-4">
-            This action cannot be undone. This will permanently delete the company<br />
-            <span className="font-semibold text-gray-900">&quot;{company.companyName}&quot;</span> and remove all associated data.
-          </p>
-
-          <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
-            <p className="text-sm text-red-800">
-              <strong>Warning:</strong> Deleting this company will also remove:
-            </p>
-            <ul className="text-sm text-red-700 mt-2 list-disc list-inside">
-              <li>All company shares and trading history</li>
-              <li>Associated transactions and records</li>
-              <li>Owner and registration information</li>
-            </ul>
+          {/* Footer Actions */}
+          <div className="bg-gray-50 px-4 py-3 sm:px-6 md:px-8 lg:px-10 sm:flex sm:flex-row-reverse sm:gap-3">
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isLoading || confirmationText !== company.companyName}
+              className="w-full inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Deleting...
+                </>
+              ) : (
+                "Delete Company"
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={handleClose}
+              disabled={isLoading}
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Cancel
+            </button>
           </div>
-
-          <div className="text-left">
-            <label htmlFor="confirmation" className="block text-sm font-medium text-gray-700 mb-2">
-              Please type <span className="font-semibold text-red-600">{company.companyName}</span> to confirm:
-            </label>
-            <input
-              id="confirmation"
-              type="text"
-              value={confirmationText}
-              onChange={(e) => {
-                setConfirmationText(e.target.value)
-                setError("")
-              }}
-              placeholder="Enter company name"
-              disabled={isDeleting}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed ${
-                error ? "border-red-300" : "border-gray-300"
-              }`}
-            />
-            {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex justify-end space-x-3">
-          <button
-            onClick={handleClose}
-            disabled={isDeleting}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting || !isConfirmationValid}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-          >
-            {isDeleting ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Deleting...
-              </>
-            ) : (
-              "Delete Company"
-            )}
-          </button>
         </div>
       </div>
     </div>

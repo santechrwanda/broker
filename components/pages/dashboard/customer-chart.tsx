@@ -34,22 +34,14 @@ const CustomerChart: React.FC = () => {
       {/* Revenue Summary */}
       <div className="bg-white p-6 rounded-xl shadow-md">
         <h3 className="text-xl font-semibold mb-3 text-[#004f64]">Commision Earning Monthly</h3>
-        <div className="flex justify-between items-center mb-6 text-sm text-gray-600">
-          <div>
+        <div className="flex justify-end items-center gap-x-10 mb-6 text-sm text-gray-600">
+          <div className="text-center">
             <p className="font-bold text-lg">7,585</p>
             <p>Active Users</p>
           </div>
-          <div>
+          <div className="text-center">
             <p className="font-bold text-lg">$22.89k</p>
             <p>Commision Earning</p>
-          </div>
-          <div>
-            <p className="font-bold text-lg">367</p>
-            <p>Refunds</p>
-          </div>
-          <div>
-            <p className="font-bold text-lg text-green-600">18.92%</p>
-            <p>Conversion</p>
           </div>
         </div>
         <ResponsiveContainer width="100%" height={250}>
@@ -60,8 +52,7 @@ const CustomerChart: React.FC = () => {
             <Tooltip />
             <Legend />
             <Bar dataKey="active_users" name="Active Users" fill="#2393b1" />
-            <Bar dataKey="commision" fill="#22c55e" />
-            <Line type="monotone" dataKey="refunds" stroke="#ef4444" />
+            <Line type="monotone" dataKey="commision" name="Earning" stroke="#22c55e" />
           </ComposedChart>
         </ResponsiveContainer>
       </div>

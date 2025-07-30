@@ -8,7 +8,6 @@ import { env } from "@/common/config/envConfig";
 
 const cookieExtractor = (req: Request) => {
     let token = null;
-    console.log(req.cookies);
     if (req?.cookies) {
         token = req.cookies.auth_token;
     }

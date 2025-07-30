@@ -1,7 +1,7 @@
 import CommisionTable from "@/components/pages/market/commission-table";
 import ExportCommissions from "@/components/pages/market/export-commissions";
 import SecuritySummary from "@/components/pages/market/security-summar";
-import SecuritiesTable from "@/components/pages/market/security-table";
+import SecuritiesTable from "@/components/pages/market/market-table";
 
 const SecuritiesPage: React.FC = () => {
   return (

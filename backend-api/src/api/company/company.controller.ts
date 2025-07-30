@@ -4,12 +4,13 @@ import { asyncCatch, ErrorHandler } from "@/common/middleware/errorHandler"
 import type { Request, Response, NextFunction, RequestHandler } from "express"
 import { Op } from "sequelize"
 import User from "@/common/models/users"
-import type { User as UserShape } from "../user/user.schema";
+import type { User as UserShape } from "../user/user.schema"
 
 class CompanyController {
   public createCompany: RequestHandler = asyncCatch(async (req: Request, res: Response, next: NextFunction) => {
     const {
       companyName,
+      security, // Added security
       companyAddress,
       companyTelephone,
       ownerFullName,
@@ -31,6 +32,7 @@ class CompanyController {
 
     const { dataValues: company } = await Company.create({
       companyName,
+      security, // Added security
       companyAddress,
       companyTelephone,
       companyLogo: logoUrl || undefined,
@@ -56,6 +58,7 @@ class CompanyController {
     if (search) {
       whereClause[Op.or] = [
         { companyName: { [Op.iLike]: `%${search}%` } },
+        { security: { [Op.iLike]: `%${search}%` } }, // Search by security
         { ownerFullName: { [Op.iLike]: `%${search}%` } },
         { ownerEmail: { [Op.iLike]: `%${search}%` } },
       ]

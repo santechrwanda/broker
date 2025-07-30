@@ -3,7 +3,8 @@ import { createApiReqestBody, createApiResponse } from "@/api-docs/openAPIRespon
 import { StatusCodes } from "http-status-codes"
 import {
   CommissionSchema,
-  CreateCommissionSchema,
+  CreateCommissionManualSchema,
+  RequestCommissionSchema,
   UpdateCommissionSchema,
   CommissionStatusSchema,
   CommissionStatsSchema,
@@ -12,31 +13,36 @@ import { z } from "zod"
 
 export const commissionRegistry = new OpenAPIRegistry()
 
-// Create commission
+// Create commission (manual/admin)
 commissionRegistry.registerPath({
   method: "post",
   path: "/api/commissions",
   tags: ["Commission"],
   security: [{ bearerAuth: [] }],
   request: {
-    body: createApiReqestBody(CreateCommissionSchema),
+    body: createApiReqestBody(CreateCommissionManualSchema),
   },
   responses: createApiResponse(CommissionSchema, "Commission created successfully", StatusCodes.CREATED),
 })
 
-// Get all commissions with pagination and filters
+// Request commission (user-initiated)
+commissionRegistry.registerPath({
+  method: "post",
+  path: "/api/commissions/request",
+  tags: ["Commission"],
+  security: [{ bearerAuth: [] }],
+  request: {
+    body: createApiReqestBody(RequestCommissionSchema),
+  },
+  responses: createApiResponse(CommissionSchema, "Commission request created successfully", StatusCodes.CREATED),
+})
+
+// Get all commissions (removed pagination/search)
 commissionRegistry.registerPath({
   method: "get",
   path: "/api/commissions",
   tags: ["Commission"],
   parameters: [
-    {
-      name: "search",
-      in: "query",
-      description: "Search by broker name, customer name, or company name",
-      required: false,
-      schema: { type: "string" },
-    },
     {
       name: "status",
       in: "query",
@@ -68,34 +74,8 @@ commissionRegistry.registerPath({
       required: false,
       schema: { type: "string" },
     },
-    {
-      name: "page",
-      in: "query",
-      description: "Page number",
-      required: false,
-      schema: { type: "integer", default: 1 },
-    },
-    {
-      name: "limit",
-      in: "query",
-      description: "Items per page",
-      required: false,
-      schema: { type: "integer", default: 10 },
-    },
   ],
-  responses: createApiResponse(
-    z.object({
-      commissions: z.array(CommissionSchema),
-      pagination: z.object({
-        currentPage: z.number(),
-        totalPages: z.number(),
-        totalItems: z.number(),
-        itemsPerPage: z.number(),
-      }),
-    }),
-    "Commissions retrieved successfully",
-    StatusCodes.OK,
-  ),
+  responses: createApiResponse(z.array(CommissionSchema), "Commissions retrieved successfully", StatusCodes.OK),
 })
 
 // Get commission by ID
@@ -159,11 +139,7 @@ commissionRegistry.registerPath({
       in: "query",
       description: "Type of commissions to retrieve",
       required: false,
-      schema: {
-        type: "string",
-        enum: ["broker", "customer", "all"],
-        default: "all",
-      },
+      schema: { type: "string", enum: ["broker", "customer", "all"], default: "all" },
     },
   ],
   responses: createApiResponse(z.array(CommissionSchema), "Your commissions retrieved successfully", StatusCodes.OK),

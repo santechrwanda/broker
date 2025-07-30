@@ -9,14 +9,19 @@
 	"scripts": {
 		"build": "tsc && tsup",
 		"start:dev": "node --import=tsx --watch src/index.ts",
+		
 		"start:prod": "pnpm build && node dist/index.js",
 		"check": "biome check --write",
 		"test": "vitest run",
+		"scrape:rse": "node --import=tsx src/scripts/scrapeRSE.ts",
+		"db:reset": "node --import=tsx src/scripts/resetDatabase.ts",
 		"test:cov": "vitest run --coverage"
 	},
 	"dependencies": {
 		"@asteasolutions/zod-to-openapi": "7.3.4",
+		"axios": "^1.11.0",
 		"bcryptjs": "^3.0.2",
+		"cheerio": "^1.1.2",
 		"cookie-parser": "^1.4.7",
 		"cors": "2.8.5",
 		"dotenv": "^16.6.1",

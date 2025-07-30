@@ -27,8 +27,8 @@ export const CommissionSchema = z
   })
   .openapi("Commission")
 
-// Schema for creating a commission
-export const CreateCommissionSchema = z
+// Schema for creating a commission (manual/admin)
+export const CreateCommissionManualSchema = z
   .object({
     brokerId: z.string().uuid("Invalid broker ID"),
     customerId: z.string().uuid("Invalid customer ID"),
@@ -38,7 +38,16 @@ export const CreateCommissionSchema = z
     commissionRate: z.number().min(0).max(100, "Commission rate must be between 0 and 100").default(0),
     notes: z.string().optional(),
   })
-  .openapi("CreateCommission")
+  .openapi("CreateCommissionManual")
+
+// Schema for user requesting a commission
+export const RequestCommissionSchema = z
+  .object({
+    companyId: z.string().uuid("Invalid company ID"),
+    numberOfShares: z.number().int().min(1, "Number of shares must be at least 1"),
+    security: z.string().min(1, "Security symbol is required"),
+  })
+  .openapi("RequestCommission")
 
 // Schema for updating a commission
 export const UpdateCommissionSchema = z

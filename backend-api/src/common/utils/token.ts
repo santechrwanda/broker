@@ -31,7 +31,6 @@ export const attachCookie = (user: User, res: Response) => {
     res.cookie("auth_token", token, {
         secure: true,
         sameSite:'none',
-        domain: ".onrender.com",
         httpOnly:true,
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });

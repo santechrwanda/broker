@@ -4,13 +4,25 @@ import passport from "passport"
 
 const commissionRoutes: Router = express.Router()
 
-// Public routes
+// Public routes (e.g., for general viewing if allowed, though most will be protected)
 commissionRoutes.get("/", commissionController.getAllCommissions)
 commissionRoutes.get("/stats", commissionController.getCommissionStats)
 commissionRoutes.get("/:id", commissionController.getCommissionById)
 
 // Protected routes (require authentication)
-commissionRoutes.post("/", passport.authenticate("jwt", { session: false }), commissionController.createCommission)
+// Existing manual/admin creation route
+commissionRoutes.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  commissionController.createCommissionManual,
+)
+
+// New user request commission route
+commissionRoutes.post(
+  "/request",
+  passport.authenticate("jwt", { session: false }),
+  commissionController.requestCommission,
+)
 
 commissionRoutes.get(
   "/my/commissions",

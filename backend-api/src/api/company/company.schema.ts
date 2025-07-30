@@ -11,6 +11,7 @@ export const CompanySchema = z
   .object({
     id: z.string().uuid().optional(),
     companyName: z.string().min(1, "Company name is required"),
+    security: z.string().min(1, "Security symbol is required").optional(), // Added security field
     companyAddress: z.string().min(1, "Company address is required"),
     companyTelephone: z.string().min(1, "Company telephone is required"),
     companyLogo: z.string().url().optional(),
@@ -43,6 +44,7 @@ export const CompanySchema = z
 export const CreateCompanySchema = z
   .object({
     companyName: z.string().min(1, "Company name is required"),
+    security: z.string().min(1, "Security symbol is required").optional(), // Added security field
     companyAddress: z.string().min(1, "Company address is required"),
     companyTelephone: z.string().min(1, "Company telephone is required"),
     ownerFullName: z.string().min(1, "Owner full name is required"),
@@ -70,6 +72,7 @@ export const CreateCompanySchema = z
 export const UpdateCompanySchema = z
   .object({
     companyName: z.string().min(1, "Company name is required").optional(),
+    security: z.string().min(1, "Security symbol is required").optional(), // Added security field
     companyAddress: z.string().min(1, "Company address is required").optional(),
     companyTelephone: z.string().min(1, "Company telephone is required").optional(),
     ownerFullName: z.string().min(1, "Owner full name is required").optional(),

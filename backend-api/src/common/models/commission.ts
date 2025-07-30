@@ -141,18 +141,4 @@ Company.hasMany(Commission, {
   as: "commissions",
 })
 
-// Add hooks for automatic calculations
-Commission.addHook("beforeSave", (commission: any) => {
-  // Calculate total amount
-  commission.totalAmount = commission.numberOfShares * commission.pricePerShare
-
-  // Calculate commission amount
-  commission.commissionAmount = (commission.totalAmount * commission.commissionRate) / 100
-
-  // Set processedAt when status changes to completed
-  if (commission.status === "completed" && !commission.processedAt) {
-    commission.processedAt = new Date()
-  }
-})
-
 export default Commission

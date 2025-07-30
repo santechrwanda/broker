@@ -56,15 +56,15 @@ export interface CompanyFormData {
   companyName: string
   companyAddress: string
   companyTelephone: string
-  companyLogo?: File
+  companyLogo?: string
   ownerFullName: string
   ownerEmail: string
   ownerAddress: string
   ownerPhone: string
   numberOfShares: number
   companyCategory: string
-  description: string // UI only field
-  email: string // UI only field (maps to ownerEmail)
+  description?: string // UI only field
+  email?: string // UI only field (maps to ownerEmail)
 }
 
 // Transform form data to backend payload

@@ -17,6 +17,12 @@ const Company = sequelize.define("Company", {
     },
     comment: "Company name is required.",
   },
+  security: {
+    type: DataTypes.STRING,
+    allowNull: true, // Can be false if always required for new companies
+    unique: true, // Ensure security symbols are unique
+    comment: "Security symbol of the company (e.g., MTNR)",
+  },
   companyAddress: {
     type: DataTypes.TEXT,
     allowNull: false,

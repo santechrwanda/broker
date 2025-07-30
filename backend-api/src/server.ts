@@ -13,6 +13,8 @@ import cookieParser from "cookie-parser"
 import { userRoutes } from "@/api/user/user.routes"
 import { companyRoutes } from "@/api/company/company.routes"
 import { commissionRoutes } from "@/api/commission/commission.routes"
+import { marketRoutes } from "@/api/market/market.routes"
+import { transactionRoutes } from "@/api/transaction/transaction.routes"
 
 const app: Express = express()
 dotenv.config()
@@ -30,7 +32,7 @@ app.use(helmet())
 // Serve static files from assets directory
 app.use("/assets", express.static(path.join(process.cwd(), "assets")))
 
-// app.use(rateLimiter);
+// app.use(rateLimiter); // Re-enable if needed
 app.use(passport.initialize())
 
 jwtAuthMiddleware(passport) //Set UP strategies
@@ -41,6 +43,8 @@ app.use("/api", authRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/companies", companyRoutes)
 app.use("/api/commissions", commissionRoutes)
+app.use("/api/market", marketRoutes)
+app.use("/api/transactions", transactionRoutes)
 
 // Swagger UI
 app.use(openAPIRouter)

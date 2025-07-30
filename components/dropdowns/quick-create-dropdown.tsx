@@ -10,8 +10,8 @@ const QuickCreateDropdown = () => {
     <div className="space-y-4">
       <CustomDropdown
         trigger={
-          <button className="bg-[#c9f6ee] cursor-pointer text-[#004f64] font-medium px-4 py-2 flex items-center gap-x-2 rounded shadow hover:bg-[#b2eee2] transition text-sm">
-            <IoIosAddCircle /> Quick Create <FaAngleDown className="text-[#004f64]/80" />
+          <button className="bg-[#2baacd] cursor-pointer text-white font-medium px-4 py-2 flex items-center gap-x-2 rounded shadow hover:bg-[#004f64]/80 transition text-sm">
+            <IoIosAddCircle /> Quick Create <FaAngleDown className="text-white" />
           </button>
         }
         dropdownClassName="min-w-72 rounded-md bg-white shadow-lg ring-1 ring-black/5 p-4"
