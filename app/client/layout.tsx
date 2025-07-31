@@ -1,14 +1,13 @@
 "use client"
 import DashboardSidebar from "@/components/layouts/dashboard-sidebar"
-import type React from "react"
-import { TbReportAnalytics } from "react-icons/tb"
-import { RiOrganizationChart } from "react-icons/ri"
-import { FiHome, FiMessageSquare, FiUser } from "react-icons/fi"
+import type React from "react";
+import { FiHome, FiMessageSquare } from "react-icons/fi"
 import { MdOutlineSell } from "react-icons/md"
 import DashboardHeader from "@/components/layouts/headers/dashboard-header"
 import { Provider } from "react-redux"
 import { store } from "../../hooks/store"
-import { ToastContainer } from "react-toastify"
+import { ToastContainer } from "react-toastify"; // Icons for sub-tabs
+import { GiTrade } from "react-icons/gi" // Icon for commissions
 
 const topNavLinks = [
   { name: "Dashboard", href: "/client", icon: <FiHome size={20} /> },
@@ -17,6 +16,7 @@ const topNavLinks = [
     href: "/client/market", // Parent link, leads to Market overview
     icon: <MdOutlineSell size={20} />,
     subLinks: [
+      { name: "Transactions", href: "/client/market/commissions", icon: <GiTrade size={20} /> },
       { name: "Market", href: "/client/market", icon: <MdOutlineSell size={20} /> },
     ],
   },

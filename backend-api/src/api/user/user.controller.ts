@@ -16,7 +16,8 @@ class UserController {
     } else {
       const data = await Setting.findOne()
       const settings = data?.dataValues
-      hashedPassword = settings?.defaultPassword || undefined
+      const generatedPassword = settings?.defaultPassword || "StockBroker@123";
+      hashedPassword = await getHash(generatedPassword);
     }
 
     // Handle profile image upload

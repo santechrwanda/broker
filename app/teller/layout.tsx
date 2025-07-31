@@ -29,21 +29,6 @@ const topNavLinks = [
     icon: <FiMessageSquare size={20} />,
   },
   {
-    name: "Users",
-    href: "/teller/users", // Parent link, leads to Customers overview
-    icon: <FiUser size={20} />,
-    subLinks: [
-      { name: "Employees", href: "/teller/users/employees", icon: <FaUserTie size={20} /> },
-      { name: "Customers", href: "/teller/users", icon: <FaUserFriends size={20} /> },
-      { name: "Agents", href: "/teller/users/agents", icon: <FaUsers size={20} /> },
-    ],
-  },
-  {
-    name: "Companies",
-    href: "/teller/companies",
-    icon: <RiOrganizationChart size={20} />,
-  },
-  {
     name: "Reports",
     href: "/teller/reports",
     icon: <TbReportAnalytics size={20} />,

@@ -1,146 +1,183 @@
-import CustomerChart from "@/components/pages/dashboard/customer-chart";
-import React from "react";
-import {
-    FaDollarSign,
-    FaShoppingCart,
-    FaUsers,
-    FaWallet,
-} from "react-icons/fa";
-import { FiCalendar } from "react-icons/fi";
+"use client"
+import { useMemo } from "react"
+import { useGetAllCommissionsQuery } from "@/hooks/use-commissions"
+import { useGetAllUsersQuery } from "@/hooks/use-users"
+import { useGetAllCompaniesQuery } from "@/hooks/use-company"
+import { useGetMarketDataQuery } from "@/hooks/use-market"
+import LoadingSpinner from "@/components/common/loading-spinner"
+import { FiTrendingUp, FiDollarSign } from 'react-icons/fi';
+import { BsFillBuildingFill } from "react-icons/bs"
 
-const DashboardHome = () => {
+const ClientDashboard = () => {
+  const { data: commissions = [], isLoading: isLoadingCommissions } = useGetAllCommissionsQuery()
+  const { data: users = [], isLoading: isLoadingUsers } = useGetAllUsersQuery()
+  const { data: companies = [], isLoading: isLoadingCompanies } = useGetAllCompaniesQuery()
+  const { data: marketData = [], isLoading: isLoadingMarket } = useGetMarketDataQuery({});
+
+  // Mock current user ID - in real app, this would come from auth context
+  const currentUserId = "user-123"
+
+  // Filter commissions for current client
+  const myCommissions = useMemo(() => {
+    return commissions.filter((commission) => commission.customerId === currentUserId)
+  }, [commissions, currentUserId])
+
+  const stats = useMemo(() => {
+    const totalCommissions = myCommissions.length
+    const completedCommissions = myCommissions.filter((c) => c.status === "completed").length
+    const pendingCommissions = myCommissions.filter((c) => c.status === "pending").length
+    const totalCommissionAmount = myCommissions.reduce((sum, c) => sum + (c.commissionAmount || 0), 0)
+
+    return {
+      totalCommissions,
+      completedCommissions,
+      pendingCommissions,
+      totalCommissionAmount,
+      totalCompanies: companies.length,
+      totalMarketValue: marketData.reduce((sum, m) => sum + (m.value || 0), 0),
+    }
+  }, [myCommissions, companies, marketData])
+
+  if (isLoadingCommissions || isLoadingUsers || isLoadingCompanies || isLoadingMarket) {
     return (
-        <div className="p-6 bg-[#f8f9ff] min-h-screen">
-            {/* Top Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-[#004f64]">
-                        Good Morning, Emma!
-                    </h1>
-                    <p className="text-sm text-gray-500">
-                        Here’s what’s happening with your portfolio today.
-                    </p>
-                </div>
+      <div className="flex justify-center items-center h-full">
+        <LoadingSpinner />
+      </div>
+    )
+  }
 
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-white rounded shadow text-sm text-gray-600">
-                        <FiCalendar />
-                        <span>01 Jan, 2025 to 31 Jan, 2025</span>
-                    </div>
-                    <button className="bg-[#c9f6ee] text-[#004f64] font-medium px-4 py-2 rounded shadow hover:bg-[#b2eee2] transition text-sm">
-                        + Add Stock
-                    </button>
-                </div>
+  return (
+    <div className="p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Client Dashboard</h1>
+        <p className="text-gray-600 mt-2">Welcome back! Here&apos;s your portfolio overview.</p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">My Commissions</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalCommissions}</p>
             </div>
-
-            {/* Dashboard Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-                {/* Total Earnings */}
-                <div className="bg-white p-5 rounded border border-gray-500/20 shadow hover:shadow-md transition">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h4 className="text-sm text-gray-500 font-semibold">
-                                TOTAL EARNINGS
-                            </h4>
-                            <p className="text-xl font-bold text-[#004f64]">
-                                $559.25k
-                            </p>
-                            <p className="text-green-600 text-sm mt-1">
-                                ↑ +16.24%
-                            </p>
-                        </div>
-                        <div className="text-3xl text-[#004f64] bg-[#e3f9f5] p-3 rounded">
-                            <FaDollarSign />
-                        </div>
-                    </div>
-                    <a
-                        href="#"
-                        className="text-blue-600 text-sm mt-4 inline-block"
-                    >
-                        View net earnings
-                    </a>
-                </div>
-
-                {/* Trades */}
-                <div className="bg-white p-5 rounded border border-gray-500/20 shadow hover:shadow-md transition">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h4 className="text-sm text-gray-500 font-semibold">
-                                PARTNERS
-                            </h4>
-                            <p className="text-xl font-bold text-[#004f64]">
-                                36,894
-                            </p>
-                            <p className="text-red-500 text-sm mt-1">
-                                ↓ -3.57%
-                            </p>
-                        </div>
-                        <div className="text-3xl text-[#004f64] bg-[#e6f2fb] p-3 rounded">
-                            <FaShoppingCart />
-                        </div>
-                    </div>
-                    <a
-                        href="#"
-                        className="text-blue-600 text-sm mt-4 inline-block"
-                    >
-                        View all partners
-                    </a>
-                </div>
-
-                {/* Clients */}
-                <div className="bg-white p-5 rounded border border-gray-500/20 shadow hover:shadow-md transition">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h4 className="text-sm text-gray-500 font-semibold">
-                                CLIENTS
-                            </h4>
-                            <p className="text-xl font-bold text-[#004f64]">
-                                183.35M
-                            </p>
-                            <p className="text-green-600 text-sm mt-1">
-                                ↑ +29.08%
-                            </p>
-                        </div>
-                        <div className="text-3xl text-[#004f64] bg-[#f9f0e9] p-3 rounded">
-                            <FaUsers />
-                        </div>
-                    </div>
-                    <a
-                        href="#"
-                        className="text-blue-600 text-sm mt-4 inline-block"
-                    >
-                        See details
-                    </a>
-                </div>
-
-                {/* Balance */}
-                <div className="bg-white p-5 rounded border border-gray-500/20 shadow hover:shadow-md transition">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h4 className="text-sm text-gray-500 font-semibold">
-                                MY BALANCE
-                            </h4>
-                            <p className="text-xl font-bold text-[#004f64]">
-                                $165.89k
-                            </p>
-                            <p className="text-gray-400 text-sm mt-1">+0.00%</p>
-                        </div>
-                        <div className="text-3xl text-[#004f64] bg-[#e8e9f9] p-3 rounded">
-                            <FaWallet />
-                        </div>
-                    </div>
-                    <a
-                        href="#"
-                        className="text-blue-600 text-sm mt-4 inline-block"
-                    >
-                        Withdraw money
-                    </a>
-                </div>
+            <div className="p-3 bg-blue-100 rounded-full">
+              <FiTrendingUp className="w-6 h-6 text-blue-600" />
             </div>
-
-            <CustomerChart />
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <span className="text-green-600 font-medium">{stats.completedCommissions} completed</span>
+            <span className="text-gray-500 mx-2">•</span>
+            <span className="text-yellow-600 font-medium">{stats.pendingCommissions} pending</span>
+          </div>
         </div>
-    );
-};
 
-export default DashboardHome;
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Commission Value</p>
+              <p className="text-2xl font-bold text-gray-900">${stats.totalCommissionAmount.toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-green-100 rounded-full">
+              <FiDollarSign className="w-6 h-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Available Companies</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalCompanies}</p>
+            </div>
+            <div className="p-3 bg-purple-100 rounded-full">
+              <BsFillBuildingFill className="w-6 h-6 text-purple-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Market Value</p>
+              <p className="text-2xl font-bold text-gray-900">${stats.totalMarketValue.toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-orange-100 rounded-full">
+              <FiTrendingUp className="w-6 h-6 text-orange-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Commissions */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Recent Commissions</h2>
+        </div>
+        <div className="p-6">
+          {myCommissions.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No commissions found. Start trading to see your commissions here.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Company
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Shares
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Amount
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {myCommissions.slice(0, 5).map((commission) => (
+                    <tr key={commission.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {commission.companyId}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{commission.numberOfShares}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${commission.commissionAmount?.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            commission.status === "completed"
+                              ? "bg-green-100 text-green-800"
+                              : commission.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {commission.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(commission.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ClientDashboard

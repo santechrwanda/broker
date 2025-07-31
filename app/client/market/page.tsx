@@ -1,40 +1,27 @@
-"use client";
+"use client"
+import SecuritySummary from "@/components/pages/market/security-summar"
+import { MarketTable } from "@/components/pages/market/market-table"
 
-import SecuritySummary from "@/components/pages/market/security-summar";
-import SecuritiesTable from "@/components/pages/market/market-table";
-import { FiTrendingUp } from "react-icons/fi";
-import { IoShareSocialOutline } from "react-icons/io5";
-
-const statistics = [
-  {
-    label: "Total Buy",
-    value: "$658.00k",
-    icon: <FiTrendingUp className="text-blue-500" />,
-    bg: "bg-blue-100",
-  },
-  {
-    label: "My Shares",
-    value: "243",
-    icon: <IoShareSocialOutline className="text-red-500" />,
-    bg: "bg-red-100",
-  },
-
-  {
-    label: "No of Securities",
-    value: "104",
-    icon: <IoShareSocialOutline className="text-yellow-500" />,
-    bg: "bg-yellow-100",
-  },
-];
-
-const SecuritiesPage: React.FC = () => {
-
+const ClientMarketPage = () => {
   return (
-    <>
-      <SecuritySummary stats={ statistics } />  
-      <SecuritiesTable />
-    </>
-  );
-};
+    <div className="p-6">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Market Overview</h1>
+        <p className="text-gray-600 mt-2">Real-time market data and trading opportunities</p>
+      </div>
 
-export default SecuritiesPage;
+      {/* Market Statistics */}
+      <div className="mb-8">
+        <SecuritySummary />
+      </div>
+
+      {/* Market Table */}
+      <div className="bg-white rounded-lg shadow-sm">
+        <MarketTable />
+      </div>
+    </div>
+  )
+}
+
+export default ClientMarketPage

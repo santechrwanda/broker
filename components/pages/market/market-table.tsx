@@ -4,9 +4,12 @@ import { HiOutlineArrowUp, HiOutlineArrowDown } from "react-icons/hi"
 import Link from "next/link"
 import LoadingSpinner from "@/components/common/loading-spinner"
 import { CURRENTCY } from "@/utility/constants"
+import { usePathname } from "next/navigation"
+
 
 export const MarketTable = () => {
   const { data: marketData, isLoading, isError, error } = useGetMarketDataQuery({})
+  const pathname = usePathname();
 
   if (isLoading) {
     return (
@@ -106,7 +109,7 @@ export const MarketTable = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <Link
-                    href={`/dashboard/market/trade-now/${item.security}`}
+                    href={`${pathname}/trade-now/${item.security}`}
                     className="text-blue-600 hover:text-blue-900 "
                   >
                     Buy Now
