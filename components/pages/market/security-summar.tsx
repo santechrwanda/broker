@@ -7,9 +7,8 @@ import { LuUsers } from "react-icons/lu"
 import { useGetAllCommissionsQuery } from "@/hooks/use-commissions"
 import { useGetAllUsersQuery } from "@/hooks/use-users"
 import { useGetAllCompaniesQuery } from "@/hooks/use-company"
-import LoadingSpinner from "@/components/common/loading-spinner"
 
-interface StatsCardProps {
+export interface StatsCardProps {
   stats?: {
     label: string
     value: string | number
@@ -87,7 +86,7 @@ export default function StatsCards({ stats }: StatsCardProps) {
         <div key={index} className="flex items-center justify-between bg-white p-6 rounded-lg shadow-sm">
           <div>
             <p className="text-sm text-gray-500">{stat.label}</p>
-            <p className="text-2xl font-semibold text-gray-800">{stat.value}</p>
+            <p className="text-xl text-gray-600 font-semibold">{stat.value}</p>
           </div>
           <div className={`w-10 h-10 flex items-center justify-center rounded-md ${stat.bg}`}>{stat.icon}</div>
         </div>
@@ -98,14 +97,14 @@ export default function StatsCards({ stats }: StatsCardProps) {
           <p className="text-sm text-gray-500">Display Data of current:</p>
           <div className="flex gap-2 items-end mt-2">
             <button
-              className={`${false ? "border border-red-500/20" : "bg-red-500/20"} px-3 cursor-pointer h-7 text-red-500 hover:text-white hover:bg-red-400 text-[12px] rounded`}
+              className={`${false ? "border border-gray-500/20" : "bg-primary text-white"} px-3 cursor-pointer h-7 text-gray-600 text-[12px] rounded`}
             >
               Month
             </button>
-            <button className="border border-info/20 px-3 cursor-pointer h-7 text-info hover:text-white hover:bg-info text-[12px] rounded">
+            <button className="border border-gray-500/20 px-3 cursor-pointer h-7 text-gray-600 text-[12px] rounded">
               Week
             </button>
-            <button className="border border-yellow-500/20 cursor-pointer px-3 h-7 text-yellow-600 hover:text-white hover:bg-yellow-400 text-[12px] rounded">
+            <button className="border border-gray-500/20 cursor-pointer px-3 h-7 text-gray-600 text-[12px] rounded">
               Day
             </button>
           </div>

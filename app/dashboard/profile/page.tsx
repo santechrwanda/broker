@@ -743,7 +743,7 @@ export default function AdminProfile() {
                   <td className="py-3 px-4 text-sm">{login.date}</td>
                   <td className="py-3 px-4 text-sm">{login.device}</td>
                   <td className="py-3 px-4 text-sm">{login.location}</td>
-                  <td className="py-3 px-4 text-sm font-mono">{login.ip}</td>
+                  <td className="py-3 px-4 text-sm">{login.ip}</td>
                   <td className="py-3 px-4">
                     <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                       {login.status}

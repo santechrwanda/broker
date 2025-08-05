@@ -2,14 +2,7 @@
 import AuthenticationFooter from "@/components/layouts/footers/auth-footer";
 import { store } from "@/hooks/store";
 import { Provider } from "react-redux";
-
-// export const metadata: Metadata = {
-//     title: "Authentication",
-//     description: "Authentication for Stock Broker",
-//     icons: {
-//         icon: "/icon.svg",
-//     },
-// };
+import { ToastContainer } from "react-toastify";
 
 export default function RootLayout({
     children,
@@ -22,6 +15,11 @@ export default function RootLayout({
                 <div></div>
                 {children}
                 <AuthenticationFooter />
+                <ToastContainer
+                    position="top-right"
+                    autoClose={30000} //30 seconds
+                    theme="dark"
+                />
             </section>
         </Provider>
     );

@@ -9,8 +9,8 @@ const MarketPage = () => {
     <div className="flex flex-col gap-5">
       <Breadcrumb
         items={[
-          { label: "Dashboard", path: "/dashboard" },
-          { label: "Market", path: "/dashboard/market" },
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Market", href: "/dashboard/market" },
         ]}
       />
       <h2 className="text-2xl font-bold text-gray-800">Market Overview</h2>

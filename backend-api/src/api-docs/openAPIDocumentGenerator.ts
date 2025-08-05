@@ -5,6 +5,9 @@ import { companyRegistry } from "@/api/company/company.docs"
 import { commissionRegistry } from "@/api/commission/commission.docs"
 import { marketRegistry } from "@/api/market/market.docs"
 import { transactionRegistry } from "@/api/transaction/transaction.docs"
+import { walletRegistry } from "@/api/wallet/wallet.docs" // Import wallet registry
+import { watchlistRegistry } from "@/api/watchlist/watchlist.docs"
+import { holdingsRegistry } from "@/api/holdings/holdings.docs"
 
 export type OpenAPIDocument = ReturnType<OpenApiGeneratorV3["generateDocument"]>
 
@@ -16,6 +19,9 @@ export function generateOpenAPIDocument(): OpenAPIDocument {
     commissionRegistry,
     marketRegistry,
     transactionRegistry,
+    walletRegistry,
+    watchlistRegistry,
+    holdingsRegistry
   ])
   const generator = new OpenApiGeneratorV3(registry.definitions)
 

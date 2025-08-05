@@ -68,16 +68,6 @@ const marketApi = backendApi.injectEndpoints({
       providesTags: ["MarketToday"],
     }),
 
-    // Get market statistics
-    getMarketStatistics: builder.query<MarketStatistics, void>({
-      query: () => ({
-        url: "/api/market/stats",
-        method: "GET",
-        credentials: "include"
-      }),
-      transformResponse: (response: MarketStatsResponse) => response.result,
-      providesTags: ["MarketStats"],
-    }),
 
     // Optional: Get market data by security symbol
     getMarketBySecurity: builder.query<Market[], { security: string; limit?: number }>({
@@ -93,51 +83,6 @@ const marketApi = backendApi.injectEndpoints({
         "Market"
       ],
     }),
-
-    // Optional: Get historical market data for a specific security
-    getMarketHistory: builder.query<Market[], { 
-      security: string; 
-      startDate?: string; 
-      endDate?: string; 
-      limit?: number 
-    }>({
-      query: ({ security, startDate, endDate, limit = 100 }) => ({
-        url: "/api/market",
-        method: "GET",
-        params: { 
-          security, 
-          startDate, 
-          endDate, 
-          limit,
-          sort: 'scrapedAt:desc' 
-        },
-        credentials: "include"
-      }),
-      transformResponse: (response: MarketResponse) => response.result || [],
-      providesTags: (result, error, { security }) => [
-        { type: "Market", id: `${security}-history` },
-        "Market"
-      ],
-    }),
-
-    // Optional: Refresh market data (trigger scraping)
-    refreshMarketData: builder.mutation<{ success: boolean; message: string }, void>({
-      query: () => ({
-        url: "/api/market/refresh",
-        method: "POST",
-        credentials: "include"
-      }),
-      invalidatesTags: ["Market", "MarketToday", "MarketStats"],
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          // Refetch market data after successful refresh
-          dispatch(marketApi.util.invalidateTags(["Market", "MarketToday", "MarketStats"]));
-        } catch (err) {
-          console.log("Error occurred while refreshing market data", err);
-        }
-      },
-    }),
   }),
   overrideExisting: false,
 });
@@ -145,17 +90,7 @@ const marketApi = backendApi.injectEndpoints({
 export const {
   useGetMarketDataQuery,
   useGetMarketOfTheDayQuery,
-  useGetMarketStatisticsQuery,
   useGetMarketBySecurityQuery,
-  useGetMarketHistoryQuery,
-  useRefreshMarketDataMutation,
-  
-  // Lazy query hooks for conditional fetching
-  useLazyGetMarketDataQuery,
-  useLazyGetMarketOfTheDayQuery,
-  useLazyGetMarketStatisticsQuery,
-  useLazyGetMarketBySecurityQuery,
-  useLazyGetMarketHistoryQuery,
 } = marketApi;
 
 export default marketApi;

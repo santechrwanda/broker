@@ -224,7 +224,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }: CompanyDetailsModalPr
                   <HiOutlineIdentification className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-gray-600">Company ID</p>
-                    <p className="text-xs text-gray-600 font-mono break-all">{company.id}</p>
+                    <p className="text-xs text-gray-600 break-all">{company.id}</p>
                   </div>
                 </div>
               </div>

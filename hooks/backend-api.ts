@@ -13,7 +13,12 @@ const backendApi = createApi({
     "MarketToday",
     "MarketStats",
     "Transactions",
-    "MyTransactions"],
+    "MyTransactions",
+    "Wallet",
+    "MyWallet",
+    "MyWatchlist",
+    "MyHoldings"
+  ],
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_API_URL}`,
     credentials: "include",

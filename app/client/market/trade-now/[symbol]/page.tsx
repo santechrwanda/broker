@@ -1,427 +1,285 @@
-"use client"
-import { useState } from "react"
-import { useParams } from "next/navigation"
-import { toast } from "react-toastify"
-import { FaCheckCircle, FaTimesCircle, FaInfoCircle } from "react-icons/fa"
-import LoadingSpinner from "@/components/common/loading-spinner"
-import Breadcrumb from "@/components/ui/breadcrum"
+"use client";
+import { useState, useRef } from "react";
+import { 
+  FiArrowRight, 
+  FiArrowLeft, 
+  FiCheck, 
+  FiCreditCard, 
+  FiShield,
+  FiDollarSign,
+  FiX
+} from "react-icons/fi";
+import { gsap } from "gsap";
+import { toast } from "react-toastify";
 
-// Mock user ID for demonstration purposes
-const MOCK_USER_ID = "user-123"
+const MultiStepTradeForm = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [shares, setShares] = useState<number | undefined>();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const formRef = useRef<HTMLDivElement>(null);
 
-// Static Mock Data for Security and Company
-const MOCK_SECURITIES = [
-  {
-    id: "sec-1",
-    symbol: "BRALIRWA",
-    pricePerShare: 1200,
-    availableShares: 5000,
-    closingPrice: 1200,
-    previousClosingPrice: 1180,
-    change: "1.69%",
-    volume: 150000,
-    companyId: "comp-1",
-  },
-  {
-    id: "sec-2",
-    symbol: "MTNRWANDA",
-    pricePerShare: 250,
-    availableShares: 10000,
-    closingPrice: 250,
-    previousClosingPrice: 255,
-    change: "-1.96%",
-    volume: 200000,
-    companyId: "comp-2",
-  },
-  {
-    id: "sec-3",
-    symbol: "KCB",
-    pricePerShare: 3000,
-    availableShares: 2000,
-    closingPrice: 3000,
-    previousClosingPrice: 2950,
-    change: "1.69%",
-    volume: 50000,
-    companyId: "comp-3",
-  },
-]
+  // Animation for step transitions
+  const animateStepChange = (direction: "forward" | "backward") => {
+    const formElement = formRef.current;
+    if (!formElement) return;
 
-const MOCK_COMPANIES = [
-  {
-    id: "comp-1",
-    companyName: "Bralirwa Plc",
-    companySymbol: "BRALIRWA",
-    companyAddress: "Kigali, Rwanda",
-    companyCategory: "Beverages",
-    website: "https://www.bralirwa.com",
-  },
-  {
-    id: "comp-2",
-    companyName: "MTN Rwanda",
-    companySymbol: "MTNRWANDA",
-    companyAddress: "Kigali, Rwanda",
-    companyCategory: "Telecommunications",
-    website: "https://www.mtn.co.rw",
-  },
-  {
-    id: "comp-3",
-    companyName: "Kenya Commercial Bank",
-    companySymbol: "KCB",
-    companyAddress: "Nairobi, Kenya",
-    companyCategory: "Banking",
-    website: "https://ke.kcbbankgroup.com",
-  },
-]
+    const duration = 0.3;
+    const fromX = direction === "forward" ? 100 : -100;
 
-// Mock BuyRequest type for static data
-type BuyRequest = {
-  id: string
-  securityId: string
-  shares: number
-  userId: string
-  status: "pending" | "approved" | "rejected" | "completed"
-}
+    gsap.set(formElement, { x: fromX, opacity: 0 });
+    gsap.to(formElement, {
+      x: 0,
+      opacity: 1,
+      duration,
+      ease: "power2.out"
+    });
+  };
 
-export default function TradePage() {
-  const params = useParams()
-  const symbol = params.symbol as string && "BRALIRWA";
-
-  // Get static security data based on symbol
-  const security = MOCK_SECURITIES.find((s) => s.symbol === symbol)
-  const company = MOCK_COMPANIES.find((c) => c.id === security?.companyId)
-
-  const [shares, setShares] = useState(0)
-  const [currentStep, setCurrentStep] = useState<
-    "request" | "pending" | "approved" | "rejected" | "payment" | "completed"
-  >("request")
-  const [buyRequestId, setBuyRequestId] = useState<string | null>(null)
-
-  // Simulate loading states
-  const [isRequesting, setIsRequesting] = useState(false)
-  const [isApproving, setIsApproving] = useState(false)
-  const [isPaying, setIsPaying] = useState(false)
-
-  // No useEffect for data fetching errors as data is static
-
-  const handleRequestBuy = async () => {
-    if (!security || shares <= 0) {
-      toast.error("Please enter a valid number of shares.")
-      return
-    }
-    if (shares > security.availableShares) {
-      toast.error("Not enough shares available.")
-      return
+  const handleNext = () => {
+    if (currentStep === 1 && (!shares || shares <= 0)) {
+      toast.error("Please enter a valid number of shares");
+      return;
     }
 
-    setIsRequesting(true)
-    // Simulate API call
+    animateStepChange("forward");
+    setCurrentStep(prev => Math.min(prev + 1, 3));
+  };
+
+  const handleBack = () => {
+    animateStepChange("backward");
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleConfirmPurchase = () => {
+    setIsProcessing(true);
+    // Simulate wallet deduction
     setTimeout(() => {
-      const newBuyRequest: BuyRequest = {
-        id: `req-${Date.now()}`,
-        securityId: security.id,
-        shares,
-        userId: MOCK_USER_ID,
-        status: "pending",
-      }
-      setBuyRequestId(newBuyRequest.id)
-      setCurrentStep("pending")
-      toast.success("Share purchase request submitted successfully!")
-      setIsRequesting(false)
-    }, 1500)
-  }
+      setIsProcessing(false);
+      handleNext(); // Move to success step
+    }, 1000);
+  };
 
-  // Simulate approval (e.g., by an admin)
-  const simulateApproval = async (approved: boolean) => {
-    if (!buyRequestId) return
-
-    setIsApproving(true)
-    // Simulate API call
-    setTimeout(() => {
-      if (approved) {
-        setCurrentStep("approved")
-        toast.success("Your request has been approved!")
-      } else {
-        setCurrentStep("rejected")
-        toast.info("Your request has been rejected.")
-      }
-      setIsApproving(false)
-    }, 1500)
-  }
-
-  const handleProceedToPayment = () => {
-    setCurrentStep("payment")
-  }
-
-  const handlePayment = async () => {
-    if (!buyRequestId) return
-
-    setIsPaying(true)
-    // Simulate API call
-    setTimeout(() => {
-      setCurrentStep("completed")
-      toast.success("Payment successful! Shares acquired.")
-      setIsPaying(false)
-    }, 1500)
-  }
-
-  const renderStepContent = () => {
-    // No loading spinners for initial data as it's static
-    if (!security) {
-      return <div className="text-center py-8 text-red-500">Security "{symbol}" not found.</div>
-    }
-
-    const totalCost = shares * security.pricePerShare
-
-    switch (currentStep) {
-      case "request":
-        return (
-          <>
-            <h2 className="text-xl text-gray-700 font-semibold mb-4">Request Shares</h2>
-            <div className="flex flex-col gap-4">
-              <div>
-                <label htmlFor="shares" className="block text-sm font-medium text-gray-700">
-                  Number of Shares
-                </label>
-                <input
-                  id="shares"
-                  type="number"
-                  value={shares}
-                  onChange={(e) => setShares(Number.parseInt(e.target.value) || 0)}
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter shares to buy"
-                  min="0"
-                  max={security.availableShares}
-                  disabled={isRequesting}
-                />
-                {shares > security.availableShares && (
-                  <p className="mt-1 text-sm text-red-500">
-                    You can only request up to {security.availableShares} shares.
-                  </p>
-                )}
-              </div>
-              <p className="text-lg font-medium text-gray-800">Estimated Total: ${totalCost.toLocaleString()}</p>
-              <button
-                onClick={handleRequestBuy}
-                disabled={isRequesting || shares <= 0 || shares > security.availableShares}
-                className="w-full px-4 py-2 cursor-pointer bg-[#20acd3] text-white rounded hover:bg-[#5693a4] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-              >
-                {isRequesting ? (
-                  <>
-                    <LoadingSpinner /> Requesting...
-                  </>
-                ) : (
-                  "Request to Buy"
-                )}
-              </button>
-            </div>
-          </>
-        )
-      case "pending":
-        return (
-          <div className="text-center py-10">
-            <FaInfoCircle className="mx-auto h-12 w-12 text-blue-500 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Request Pending Approval</h2>
-            <p className="text-gray-600">
-              Your request for {shares} shares of {symbol} is awaiting approval. You will be notified once it's
-              reviewed.
-            </p>
-            <div className="mt-6 flex justify-center gap-4">
-              {/* Simulate admin actions for demo */}
-              <button
-                onClick={() => simulateApproval(true)}
-                disabled={isApproving}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
-              >
-                Simulate Approve
-              </button>
-              <button
-                onClick={() => simulateApproval(false)}
-                disabled={isApproving}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
-              >
-                Simulate Reject
-              </button>
-            </div>
-          </div>
-        )
-      case "approved":
-        return (
-          <div className="text-center py-10">
-            <FaCheckCircle className="mx-auto h-12 w-12 text-green-500 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Request Approved!</h2>
-            <p className="text-gray-600 mb-6">
-              Your request for {shares} shares of {symbol} has been approved. Proceed to payment to complete your
-              purchase.
-            </p>
-            <button
-              onClick={handleProceedToPayment}
-              className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700"
-            >
-              Proceed to Payment
-            </button>
-          </div>
-        )
-      case "rejected":
-        return (
-          <div className="text-center py-10">
-            <FaTimesCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Request Rejected</h2>
-            <p className="text-gray-600">
-              Unfortunately, your request for {shares} shares of {symbol} was rejected. Please contact support for more
-              details or try again.
-            </p>
-            <button
-              onClick={() => setCurrentStep("request")}
-              className="mt-6 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-            >
-              Make New Request
-            </button>
-          </div>
-        )
-      case "payment":
-        return (
-          <div className="text-center py-10">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Complete Payment</h2>
-            <p className="text-gray-600 mb-6">
-              Total amount due: <span className="font-bold text-gray-900">${totalCost.toLocaleString()}</span> for{" "}
-              {shares} shares of {symbol}.
-            </p>
-            <button
-              onClick={handlePayment}
-              disabled={isPaying}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center mx-auto"
-            >
-              {isPaying ? (
-                <>
-                  <LoadingSpinner /> Processing Payment...
-                </>
-              ) : (
-                "Simulate Payment"
-              )}
-            </button>
-            <p className="mt-4 text-sm text-gray-500">
-              (This is a simulation. In a real app, you'd integrate a payment gateway.)
-            </p>
-          </div>
-        )
-      case "completed":
-        return (
-          <div className="text-center py-10">
-            <FaCheckCircle className="mx-auto h-12 w-12 text-green-500 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Purchase Completed!</h2>
-            <p className="text-gray-600">
-              Congratulations! You have successfully acquired {shares} shares of{" "}
-              <span className="font-semibold">{symbol}</span>.
-            </p>
-            <button
-              onClick={() => {
-                setCurrentStep("request")
-                setShares(0)
-                setBuyRequestId(null)
-              }}
-              className="mt-6 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-            >
-              Make Another Purchase
-            </button>
-          </div>
-        )
-      default:
-        return null
-    }
-  }
+  // Progress steps configuration
+  const steps = [
+    { id: 1, name: "Order", icon: <FiDollarSign /> },
+    { id: 2, name: "Confirm", icon: <FiCheck /> },
+    { id: 3, name: "Complete", icon: <FiCheck /> }
+  ];
 
   return (
-    <div className="p-5 pt-0">
-      <Breadcrumb
-        items={[
-          { label: "Dashboard", path: "/dashboard" },
-          { label: "Market", path: "/dashboard/market" },
-          { label: "Trade Now", path: `/dashboard/market/trade-now/${symbol}` },
-        ]}
-      />
-      <h1 className="text-2xl text-[#004f64] font-bold mb-4">Trade {symbol}</h1>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Company & Security Info */}
-        <div className="col-span-2 space-y-6">
-          <div className="bg-white p-5 rounded shadow">
-            <h2 className="text-xl text-gray-700 font-semibold mb-2">Company/Organization Info</h2>
-            {company ? (
-              <>
-                <p>
-                  <strong className="text-gray-500">Name:</strong> {company.companyName}
-                </p>
-                <p>
-                  <strong className="text-gray-500">Address:</strong> {company.companyAddress}
-                </p>
-                <p>
-                  <strong className="text-gray-500">Sector:</strong> {company.companyCategory}
-                </p>
-                <p>
-                  <strong className="text-gray-500">Website:</strong>{" "}
-                  <a
-                    href={company.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {company.website}
-                  </a>
-                </p>
-              </>
-            ) : (
-              <p className="text-gray-500">Company details not available.</p>
-            )}
-          </div>
-
-          <div className="bg-white p-5 rounded shadow">
-            <h2 className="text-xl text-gray-700 font-semibold mb-2">Security Info</h2>
-            {security ? (
-              <>
-                <p>
-                  <strong className="text-gray-500">Symbol:</strong> {security.symbol}
-                </p>
-                <p>
-                  <strong className="text-gray-500">Price per Share:</strong> ${security.pricePerShare.toLocaleString()}
-                </p>
-                <p>
-                  <strong className="text-gray-500">Available Shares:</strong>{" "}
-                  {security.availableShares.toLocaleString()}
-                </p>
-                <p>
-                  <strong className="text-gray-500">Closing Price:</strong> ${security.closingPrice.toLocaleString()}
-                </p>
-                <p>
-                  <strong className="text-gray-500">Previous Close:</strong> $
-                  {security.previousClosingPrice.toLocaleString()}
-                </p>
-                <p>
-                  <strong className="text-gray-500">Change:</strong>{" "}
-                  <span
-                    className={`font-semibold ${
-                      security.change.startsWith("-")
-                        ? "text-red-500"
-                        : security.change === "0.00%"
-                          ? "text-gray-500"
-                          : "text-green-500"
-                    }`}
-                  >
-                    {security.change}
-                  </span>
-                </p>
-                <p>
-                  <strong className="text-gray-500">Volume:</strong> {security.volume.toLocaleString()}
-                </p>
-              </>
-            ) : (
-              <p className="text-gray-500">Security details not available.</p>
-            )}
+    <div className="flex flex-col h-screen bg-gray-50">
+      {/* Progress Stepper */}
+      <div className="w-full bg-white p-4 shadow-sm">
+        <div className="flex justify-between items-center relative">
+          {steps.map((step) => (
+            <div key={step.id} className="flex flex-col items-center z-10">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                  currentStep >= step.id
+                    ? "bg-primary text-white"
+                    : "bg-gray-200 text-gray-600"
+                }`}
+              >
+                {step.icon}
+              </div>
+              <span
+                className={`text-xs mt-2 ${
+                  currentStep >= step.id ? "text-primary font-medium" : "text-gray-500"
+                }`}
+              >
+                {step.name}
+              </span>
+            </div>
+          ))}
+          {/* Progress line */}
+          <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 mx-10 z-0">
+            <div
+              className="h-full bg-primary transition-all duration-300"
+              style={{
+                width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`
+              }}
+            ></div>
           </div>
         </div>
+      </div>
 
-        {/* Right Column: Buy Shares Flow */}
-        <div className="bg-white p-5 rounded shadow flex flex-col h-full">{renderStepContent()}</div>
+      {/* Form Content */}
+      <div className="flex-1 overflow-hidden relative p-4">
+        <div
+          ref={formRef}
+          className="absolute inset-0 p-4 transition-all duration-300"
+        >
+          {currentStep === 1 && (
+            <OrderStep shares={shares} setShares={setShares} />
+          )}
+
+          {currentStep === 2 && (
+            <ConfirmStep 
+              shares={shares} 
+              onConfirm={handleConfirmPurchase} 
+              isProcessing={isProcessing} 
+            />
+          )}
+
+          {currentStep === 3 && <SuccessStep shares={shares} />}
+        </div>
+      </div>
+
+      {/* Navigation Buttons */}
+      {currentStep !== 3 && (
+        <div className="flex justify-between p-4 bg-white border-t">
+          <button
+            onClick={handleBack}
+            disabled={currentStep === 1 || isProcessing}
+            className={`px-6 py-3 rounded-lg flex items-center gap-2 ${
+              currentStep === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-primary hover:bg-blue-50"
+            }`}
+          >
+            <FiArrowLeft />
+            Back
+          </button>
+          
+          <button
+            onClick={currentStep === 2 ? handleConfirmPurchase : handleNext}
+            disabled={isProcessing || (currentStep === 1 && (!shares || shares <= 0))}
+            className={`px-6 py-3 rounded-lg flex items-center gap-2 ${
+              isProcessing
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-primary hover:bg-blue-600 text-white"
+            }`}
+          >
+            {currentStep === 2 ? "Confirm Purchase" : "Continue"}
+            <FiArrowRight />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Step 1: Order Details
+const OrderStep = ({ shares, setShares }: any) => {
+  return (
+    <div className="space-y-6 h-full">
+      <h2 className="text-2xl font-bold text-gray-800">Order Details</h2>
+      
+      <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Security:</span>
+            <span className="font-medium">BRALIRWA</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Current Price:</span>
+            <span className="font-medium">RWF 1,200</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">
+          Number of Shares
+        </label>
+        <input
+          type="number"
+          value={shares || ""}
+          onChange={(e) => setShares(Number(e.target.value))}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+          placeholder="Enter shares to buy"
+          min="1"
+        />
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <div className="flex justify-between font-medium">
+          <span>Estimated Total:</span>
+          <span>RWF {(shares || 0) * 1200}</span>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
+// Step 2: Confirmation
+const ConfirmStep = ({ shares, onConfirm, isProcessing }: any) => {
+  const totalAmount = (shares || 0) * 1200;
+
+  return (
+    <div className="space-y-6 h-full">
+      <h2 className="text-2xl font-bold text-gray-800">Confirm Purchase</h2>
+      
+      <div className="bg-white p-4 rounded-lg shadow-sm space-y-4">
+        <div className="flex justify-between">
+          <span className="text-gray-600">Payment Method:</span>
+          <span className="font-medium">Wallet Balance</span>
+        </div>
+        
+        <div className="flex justify-between">
+          <span className="text-gray-600">Shares:</span>
+          <span className="font-medium">{shares}</span>
+        </div>
+        
+        <div className="flex justify-between">
+          <span className="text-gray-600">Price per Share:</span>
+          <span className="font-medium">RWF 1,200</span>
+        </div>
+        
+        <div className="pt-2 border-t">
+          <div className="flex justify-between font-medium">
+            <span>Total Amount:</span>
+            <span className="text-primary">RWF {totalAmount}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+        <h3 className="font-medium text-yellow-800 mb-1">Wallet Balance</h3>
+        <div className="flex justify-between items-center">
+          <span className="text-gray-600">Current Balance:</span>
+          <span className="font-medium">RWF 15,000</span>
+        </div>
+        <div className="flex justify-between items-center mt-1">
+          <span className="text-gray-600">After Purchase:</span>
+          <span className="font-medium">RWF {15000 - totalAmount}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Step 3: Success
+const SuccessStep = ({ shares }: any) => {
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-center p-4">
+      <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
+        <FiCheck className="text-green-500 text-3xl" />
+      </div>
+      <h2 className="text-2xl font-bold text-gray-800 mb-2">Purchase Completed!</h2>
+      <p className="text-gray-600 mb-6">
+        {shares} shares of BRALIRWA have been added to your portfolio
+      </p>
+      
+      <div className="bg-white p-4 rounded-lg shadow-sm w-full max-w-md">
+        <h3 className="font-medium mb-3">Transaction Details</h3>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Transaction ID:</span>
+            <span>TRX-{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Date:</span>
+            <span>{new Date().toLocaleDateString()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Amount Deducted:</span>
+            <span className="font-medium">RWF {(shares || 0) * 1200}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MultiStepTradeForm;

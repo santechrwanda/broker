@@ -61,7 +61,7 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
         </div>
         <ToastContainer
           position="top-right"
-          autoClose={60000} //1minutes
+          autoClose={30000} //30 seconds
           theme="dark"
         />
       </div>

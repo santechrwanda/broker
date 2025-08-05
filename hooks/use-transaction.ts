@@ -25,6 +25,27 @@ export interface Transaction {
   [key: string]: any;
 }
 
+export interface TransactionWallet {
+  id: string;
+  userId: string;
+  walletId: string;
+  type: "CREDIT" | "DEBIT";
+  amount: string;
+  status: "pending" | "successful" | "failed" | "reversed" | string;
+  flutterwaveRef?: string;
+  symbol?: string;
+  from?: string;
+  to?: string;
+  shares?: number;
+  txRef?: string;
+  paymentMethod?: string;
+  notes?: string;
+  currency: string;
+  completedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CreateTransactionRequest {
   type: "buy" | "sell";
   brokerId: string;
@@ -105,15 +126,15 @@ const transactionApi = backendApi.injectEndpoints({
     }),
 
     // Get my transactions (protected)
-    getMyTransactions: builder.query<Transaction[], TransactionQueryParams>({
+    getMyTransactions: builder.query<TransactionWallet[], { type?: string, status?: string }>({
       query: (params = {}) => ({
-        url: "/api/transaction/my/transactions",
+        url: "/api/wallet/transactions",
         method: "GET",
         params,
         credentials: "include"
       }),
-      transformResponse: (response: TransactionResponse) => response.result,
-      providesTags: ["MyTransactions", "Transactions"],
+      transformResponse: (response: { result: TransactionWallet[] }) => response.result,
+      providesTags: ["MyWallet", "Transactions"],
     }),
 
     // Create transaction (protected)
@@ -140,155 +161,15 @@ const transactionApi = backendApi.injectEndpoints({
           );
 
           // Update getMyTransactions cache
-          dispatch(
-            transactionApi.util.updateQueryData("getMyTransactions", {}, (draft: Transaction[] | undefined) => {
-              if (!draft) return [newTransaction];
-              draft.unshift(newTransaction);
-              return draft;
-            })
-          );
+          // dispatch(
+          //   transactionApi.util.updateQueryData("getMyTransactions", {}, (draft: TransactionWallet[] | undefined) => {
+          //     if (!draft) return [newTransaction];
+          //     draft.unshift(newTransaction);
+          //     return draft;
+          //   })
+          // );
         } catch (err) {
           console.log("Error occurred while updating transaction cache", err);
-        }
-      },
-    }),
-
-    // Update transaction (protected)
-    updateTransaction: builder.mutation<Transaction, { id: string; data: Partial<CreateTransactionRequest> }>({
-      query: ({ id, data }) => ({
-        url: `/api/transaction/${id}`,
-        method: "PUT",
-        body: data,
-        credentials: "include"
-      }),
-      transformResponse: (response: SingleTransactionResponse) => response.result,
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Transactions", id },
-        "Transactions",
-        "MyTransactions"
-      ],
-      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
-        try {
-          const { data: updatedTransaction } = await queryFulfilled;
-          
-          // Update getAllTransactions cache
-          dispatch(
-            transactionApi.util.updateQueryData("getAllTransactions", {}, (draft: Transaction[] | undefined) => {
-              if (!draft) return;
-              const idx = draft.findIndex((t) => t.id === id);
-              if (idx !== -1) draft[idx] = updatedTransaction;
-              return draft;
-            })
-          );
-
-          // Update getMyTransactions cache
-          dispatch(
-            transactionApi.util.updateQueryData("getMyTransactions", {}, (draft: Transaction[] | undefined) => {
-              if (!draft) return;
-              const idx = draft.findIndex((t) => t.id === id);
-              if (idx !== -1) draft[idx] = updatedTransaction;
-              return draft;
-            })
-          );
-
-          // Update individual transaction cache
-          dispatch(
-            transactionApi.util.updateQueryData("getTransactionById", id, () => updatedTransaction)
-          );
-        } catch (err) {
-          console.log("Error occurred while updating transaction", err);
-        }
-      },
-    }),
-
-    // Update transaction status (protected)
-    updateTransactionStatus: builder.mutation<Transaction, UpdateTransactionStatusRequest>({
-      query: ({ id, status, notes }) => ({
-        url: `/api/transaction/${id}/status`,
-        method: "PATCH",
-        body: { status, notes },
-        credentials: "include"
-      }),
-      transformResponse: (response: SingleTransactionResponse) => response.result,
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Transactions", id },
-        "Transactions",
-        "MyTransactions"
-      ],
-      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
-        try {
-          const { data: updatedTransaction } = await queryFulfilled;
-          
-          // Update all relevant caches
-          dispatch(
-            transactionApi.util.updateQueryData("getAllTransactions", {}, (draft: Transaction[] | undefined) => {
-              if (!draft) return;
-              const idx = draft.findIndex((t) => t.id === id);
-              if (idx !== -1) draft[idx] = updatedTransaction;
-              return draft;
-            })
-          );
-
-          dispatch(
-            transactionApi.util.updateQueryData("getMyTransactions", {}, (draft: Transaction[] | undefined) => {
-              if (!draft) return;
-              const idx = draft.findIndex((t) => t.id === id);
-              if (idx !== -1) draft[idx] = updatedTransaction;
-              return draft;
-            })
-          );
-
-          dispatch(
-            transactionApi.util.updateQueryData("getTransactionById", id, () => updatedTransaction)
-          );
-        } catch (err) {
-          console.log("Error occurred while updating transaction status", err);
-        }
-      },
-    }),
-
-    // Upload payment proof (protected)
-    uploadPaymentProof: builder.mutation<Transaction, { id: string; formData: FormData }>({
-      query: ({ id, formData }) => ({
-        url: `/api/transaction/${id}/payment-proof`,
-        method: "POST",
-        body: formData,
-        credentials: "include"
-      }),
-      transformResponse: (response: SingleTransactionResponse) => response.result,
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Transactions", id },
-        "Transactions",
-        "MyTransactions"
-      ],
-      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
-        try {
-          const { data: updatedTransaction } = await queryFulfilled;
-          
-          // Update all relevant caches
-          dispatch(
-            transactionApi.util.updateQueryData("getAllTransactions", {}, (draft: Transaction[] | undefined) => {
-              if (!draft) return;
-              const idx = draft.findIndex((t) => t.id === id);
-              if (idx !== -1) draft[idx] = updatedTransaction;
-              return draft;
-            })
-          );
-
-          dispatch(
-            transactionApi.util.updateQueryData("getMyTransactions", {}, (draft: Transaction[] | undefined) => {
-              if (!draft) return;
-              const idx = draft.findIndex((t) => t.id === id);
-              if (idx !== -1) draft[idx] = updatedTransaction;
-              return draft;
-            })
-          );
-
-          dispatch(
-            transactionApi.util.updateQueryData("getTransactionById", id, () => updatedTransaction)
-          );
-        } catch (err) {
-          console.log("Error occurred while updating transaction with payment proof", err);
         }
       },
     }),
@@ -320,14 +201,14 @@ const transactionApi = backendApi.injectEndpoints({
           );
 
           // Remove transaction from getMyTransactions cache
-          dispatch(
-            transactionApi.util.updateQueryData("getMyTransactions", {}, (draft: Transaction[] | undefined) => {
-              if (!draft) return;
-              const idx = draft.findIndex((t) => t.id === id);
-              if (idx !== -1) draft.splice(idx, 1);
-              return draft;
-            })
-          );
+          // dispatch(
+          //   transactionApi.util.updateQueryData("getMyTransactions", {}, (draft: Transaction[] | undefined) => {
+          //     if (!draft) return;
+          //     const idx = draft.findIndex((t) => t.id === id);
+          //     if (idx !== -1) draft.splice(idx, 1);
+          //     return draft;
+          //   })
+          // );
         } catch (err) {
           console.log("Error occurred while deleting transaction", err);
         }
@@ -376,17 +257,7 @@ export const {
 
   // Mutation hooks
   useCreateTransactionMutation,
-  useUpdateTransactionMutation,
-  useUpdateTransactionStatusMutation,
-  useUploadPaymentProofMutation,
   useDeleteTransactionMutation,
-
-  // Lazy query hooks
-  useLazyGetAllTransactionsQuery,
-  useLazyGetTransactionByIdQuery,
-  useLazyGetMyTransactionsQuery,
-  useLazyGetTransactionsByCompanyQuery,
-  useLazyGetTransactionsByBrokerQuery,
 } = transactionApi;
 
 export default transactionApi;

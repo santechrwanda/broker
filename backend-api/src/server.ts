@@ -15,6 +15,11 @@ import { companyRoutes } from "@/api/company/company.routes"
 import { commissionRoutes } from "@/api/commission/commission.routes"
 import { marketRoutes } from "@/api/market/market.routes"
 import { transactionRoutes } from "@/api/transaction/transaction.routes"
+import { walletRoutes } from "@/api/wallet/wallet.routes" // Import wallet routes
+import nodeCron from "node-cron"
+import { scrapeRSEMarketDataWithSession } from "./scripts/scrapeRSE"
+import { watchlistRoutes } from "./api/watchlist/watchlist.routes"
+import { holdingsRoutes } from "./api/holdings/holdings.routes"
 
 const app: Express = express()
 dotenv.config()
@@ -38,6 +43,17 @@ app.use(passport.initialize())
 jwtAuthMiddleware(passport) //Set UP strategies
 googleAuthStrategy(passport)
 
+
+nodeCron.schedule("0 0 */12 * *", async () => {
+  console.log("Running daily market data update task")
+  // TODO: Implement the logic to update market data
+  await scrapeRSEMarketDataWithSession()
+})
+
+// ;(async () => {
+//   await scrapeRSEMarketDataWithSession();
+// })()
+
 // Routes
 app.use("/api", authRoutes)
 app.use("/api/users", userRoutes)
@@ -45,6 +61,9 @@ app.use("/api/companies", companyRoutes)
 app.use("/api/commissions", commissionRoutes)
 app.use("/api/market", marketRoutes)
 app.use("/api/transactions", transactionRoutes)
+app.use("/api/wallet", walletRoutes)
+app.use("/api/watchlist", watchlistRoutes)
+app.use("/api/holdings", holdingsRoutes)
 
 // Swagger UI
 app.use(openAPIRouter)

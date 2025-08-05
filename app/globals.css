@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tailwind-scrollbar-utilities";
 
-@source "../node_modules/react-tailwindcss-datepicker/dist/index.esm.{js,ts}";
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,13 +10,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-inter: 'Inter', sans-serif;
   --color-info: var(--info);
-}
-
-* {
-    @apply font-[var(--font-poppins)]
+  --color-primary: #1b7b95;
+  --color-title: #004f64;
 }
 
 @media (prefers-color-scheme: dark) {

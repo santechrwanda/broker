@@ -1,19 +1,38 @@
 "use client"
 import SecuritySummary from "@/components/pages/market/security-summar"
 import { MarketTable } from "@/components/pages/market/market-table"
+import { CURRENTCY } from "@/utility/constants"
+import { FiTrendingUp } from "react-icons/fi"
+import { IoCartOutline, IoWalletOutline } from "react-icons/io5"
+
+const statisticsData = [
+    {
+      label: "Total Buy",
+      value: `${CURRENTCY} 200k`,
+      icon: <IoCartOutline className="text-red-500" />,
+      bg: "bg-blue-100",
+    },
+    {
+      label: "Total sell",
+      value: `${CURRENTCY} 100k`,
+      icon: <FiTrendingUp className="text-blue-500" />,
+      bg: "bg-red-100",
+    },
+    {
+      label: "My Wallet",
+      value: `${CURRENTCY} 1500`,
+      icon: <IoWalletOutline className="text-yellow-500" />,
+      bg: "bg-yellow-100",
+    },
+  ]
+
 
 const ClientMarketPage = () => {
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Market Overview</h1>
-        <p className="text-gray-600 mt-2">Real-time market data and trading opportunities</p>
-      </div>
-
+    <div >
       {/* Market Statistics */}
       <div className="mb-8">
-        <SecuritySummary />
+        <SecuritySummary stats={ statisticsData }/>
       </div>
 
       {/* Market Table */}

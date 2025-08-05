@@ -21,10 +21,12 @@ export const env = cleanEnv(process.env, {
     GOOGLE_CLIENT_ID: str(),
     GOOGLE_CLIENT_SECRET: str(),
     DB_NAME: str(),
-    DB_USER: str(), 
-    DB_PASSWORD: str(), 
+    DB_USER: str(),
+    DB_PASSWORD: str(),
     DB_HOST: str(),
-    DB_PORT: num()
+    DB_PORT: num(),
+    FRONTEND_REDIRECT: str({ default: "http://localhost:3000" }), // Added for Flutterwave redirect
+    FLW_HASH: str(), // Flutterwave Webhook Hash
 });
 
 export const envConfig = {

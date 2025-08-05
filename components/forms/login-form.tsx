@@ -7,6 +7,7 @@ import { FaSpinner } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useLoginUserMutation } from "@/hooks/use-authentication";
 import { ReduxErrorProps } from "@/utility/types";
+import { toast } from "react-toastify";
 
 interface LoginFormProps {
     backendError?: string;
@@ -16,16 +17,15 @@ const LoginForm = ({ backendError }: LoginFormProps) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [remember, setRemember] = useState(false);
-    const [loginError, setLoginError] = useState("");
     const router = useRouter();
 
     const [loginUser, { isLoading, error }] = useLoginUserMutation();
 
     useEffect(()=> {
         if (backendError) {
-            setLoginError(backendError);
+            toast.error(backendError);
         }else if (error) {
-            setLoginError((error as ReduxErrorProps)?.data?.message || "An error occurred during login.");
+            toast.error((error as ReduxErrorProps)?.data?.message || "An error occurred during login.");
         } 
     }, [backendError, error])
 
@@ -64,18 +64,6 @@ const LoginForm = ({ backendError }: LoginFormProps) => {
                             <div className="text-gray-500 text-center mb-3 font-bold">
                                 <small>Or sign in with credentials</small>
                             </div>
-                            {loginError && (
-                                <div className="mb-4">
-                                    <div
-                                        className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative text-center"
-                                        role="alert"
-                                    >
-                                        <span className="block sm:inline">
-                                            { loginError }
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
                             <form onSubmit={handleSubmit}>
                                 <div className="relative w-full mb-3">
                                     <label className="block uppercase text-gray-700 text-xs font-bold mb-2">

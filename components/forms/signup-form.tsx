@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaSpinner } from "react-icons/fa";
 import { useRegisterUserMutation } from "@/hooks/use-authentication";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const SignupForm = () => {
     const [email, setEmail] = useState("");
@@ -14,6 +15,12 @@ const SignupForm = () => {
     const router = useRouter();
 
     const [registerUser, { isLoading }] = useRegisterUserMutation();
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error,);
+        }
+    }, [error]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -59,18 +66,6 @@ const SignupForm = () => {
                             <div className="text-gray-500 text-center mb-3 font-bold">
                                 <small>Or sign up with credentials</small>
                             </div>
-                            {error && (
-                                <div className="mb-4">
-                                    <div
-                                        className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative text-center"
-                                        role="alert"
-                                    >
-                                        <span className="block sm:inline">
-                                            {error}
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
                             <form onSubmit={handleSubmit}>
                                 <div className="relative w-full mb-3">
                                     <label className="block uppercase text-gray-700 text-xs font-bold mb-2">

@@ -40,6 +40,7 @@ class MarketController {
     const latestScrapedData = await Market.findAll({
       attributes: ["security", [sequelize.fn("MAX", sequelize.col("scrapedAt")), "latestScrapedAt"]],
       group: ["security"],
+      order: [["latestScrapedAt", "DESC"]],
       raw: true,
     })
 
@@ -48,7 +49,7 @@ class MarketController {
       const entry = await Market.findOne({
         where: {
           security: data.security,
-          scrapedAt: data.scrapedAt,
+          scrapedAt: data.latestScrapedAt, // ← Changed from data.scrapedAt to data.latestScrapedAt
         },
       })
       if (entry) {

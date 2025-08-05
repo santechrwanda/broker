@@ -1,7 +1,6 @@
 import { DataTypes, type Model } from "sequelize"
 import sequelize from "../config/database"
 import User from "./users"
-import Company from "./company"
 import type { UserShareAttributes } from "../utils/types"
 
 export interface UserShareInstance extends Model<UserShareAttributes>, UserShareAttributes {}
@@ -20,18 +19,14 @@ const UserShare = sequelize.define<UserShareInstance>("UserShare", {
       model: User,
       key: "id",
     },
-    unique: "userCompanyUnique", // Ensure a user has only one entry per company
+    unique: "userSecurityUnique", // Ensure a user has only one entry per security
     comment: "The user who owns these shares",
   },
-  companyId: {
-    type: DataTypes.UUID,
+  security: {
+    type: DataTypes.STRING,
     allowNull: false,
-    references: {
-      model: Company,
-      key: "id",
-    },
-    unique: "userCompanyUnique", // Ensure a user has only one entry per company
-    comment: "The company whose shares are owned",
+    unique: "userSecurityUnique", // Ensure a user has only one entry per security
+    comment: "The security symbol of the shares owned",
   },
   sharesOwned: {
     type: DataTypes.INTEGER,
@@ -40,7 +35,7 @@ const UserShare = sequelize.define<UserShareInstance>("UserShare", {
     validate: {
       min: 0,
     },
-    comment: "Number of shares owned by the user in this company",
+    comment: "Number of shares owned by the user in this security",
   },
   averagePurchasePrice: {
     type: DataTypes.DECIMAL(10, 2),
@@ -59,19 +54,12 @@ UserShare.belongsTo(User, {
   as: "owner",
 })
 
-UserShare.belongsTo(Company, {
-  foreignKey: "companyId",
-  as: "company",
-})
+// UserShare does not directly belong to Market in a foreign key sense
+// as Market entries are time-series. We will join by 'security' in queries.
 
 User.hasMany(UserShare, {
   foreignKey: "userId",
   as: "ownedShares",
-})
-
-Company.hasMany(UserShare, {
-  foreignKey: "companyId",
-  as: "shareholders",
 })
 
 export default UserShare

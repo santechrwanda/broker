@@ -256,6 +256,8 @@ async function scrapeRSEMarketDataWithSession() {
         continue
       }
 
+      console.log(`Scraped entry: ${security} - Closing: ${closing}, Previous: ${previous}, Change: ${change}, Volume: ${volume}, Value: ${value}`)
+
       marketEntries.push({
         security,
         closing,
@@ -277,8 +279,7 @@ async function scrapeRSEMarketDataWithSession() {
     await sequelize.transaction(async (t) => {
       for (const entry of marketEntries) {
         await Market.upsert(entry, {
-          transaction: t,
-          conflictFields: ["security", "scrapedAt"],
+          transaction: t
         })
       }
     })

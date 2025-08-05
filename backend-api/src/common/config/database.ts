@@ -2,6 +2,17 @@ import { Sequelize } from "sequelize"
 import logger from "@/common/config/logger"
 import { env } from "@/common/config/envConfig"
 
+// // Import all models to ensure they are registered with Sequelize
+// import "@/common/models/users"
+// import "@/common/models/settings"
+// import "@/common/models/company"
+// import "@/common/models/commission"
+// import "@/common/models/market"
+// import "@/common/models/userShare"
+// import "@/common/models/transaction"
+// import "@/common/models/wallet" // Import new Wallet model
+// import "@/common/models/walletTransaction" // Import new WalletTransaction model
+
 const isDevelopment = env.isDevelopment
 
 // Build Sequelize options
@@ -29,8 +40,8 @@ export const initializeDatabase = async () => {
   try {
     await sequelize.authenticate()
     // Ensure all models are loaded before syncing
-    // User, Company, Market, Commission, Setting, UserShare, Transaction are imported above
-    await sequelize.sync({ alter: true }) // Use alter: true for non-destructive updates
+    // User, Company, Market, Commission, Setting, UserShare, Transaction, Wallet, WalletTransaction are imported above
+    // await sequelize.sync({ alter: true }) // Use alter: true for non-destructive updates
     logger.info("Connection to the database has been established successfully.")
   } catch (error) {
     console.error(error)

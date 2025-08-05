@@ -60,3 +60,75 @@ export function createApiFormDataBody(schema: z.ZodTypeAny, fileFields: string[]
     },
   }
 }
+
+export const UnauthorizedResponse = {
+  description: "Unauthorized",
+  content: {
+    "application/json": {
+      example: {
+        status: "error",
+        message: "Unauthorized",
+      },
+    },
+  },
+}
+
+export const ForbiddenResponse = {
+  description: "Forbidden",
+  content: {
+    "application/json": {
+      example: {
+        status: "error",
+        message: "Forbidden",
+      },
+    },
+  },
+}
+
+export const NotFoundResponse = {
+  description: "Not Found",
+  content: {
+    "application/json": {
+      example: {
+        status: "error",
+        message: "Not Found",
+      },
+    },
+  },
+}
+
+export const BadRequestResponse = {
+  description: "Bad Request",
+  content: {
+    "application/json": {
+      example: {
+        status: "error",
+        message: "Bad Request",
+      },
+    },
+  },
+}
+
+export const ConflictResponse = {
+  description: "Conflict",
+  content: {
+    "application/json": {
+      example: {
+        status: "error",
+        message: "Conflict",
+      },
+    },
+  },
+}
+
+export const InternalServerErrorResponse = {
+  description: "Internal Server Error",
+  content: {
+    "application/json": {
+      example: {
+        status: "error",
+        message: "Internal Server Error",
+      },
+    },
+  },
+}

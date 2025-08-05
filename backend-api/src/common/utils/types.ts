@@ -26,13 +26,15 @@ export interface MarketAttributes {
   volume: number
   value: number
   scrapedAt?: Date
+  latestScrapedAt?: Date
   createdAt?: Date
+  updatedAt?: Date
 }
 
 export interface UserShareAttributes {
   id?: string
   userId: string
-  companyId: string
+  security: string
   sharesOwned: number
   averagePurchasePrice: number
   createdAt?: Date
@@ -65,4 +67,43 @@ export interface TransactionAttributes {
   createdBy?: string | null
   createdAt?: Date
   updatedAt?: Date
+}
+
+// New types for Wallet and WalletTransaction
+export interface WalletAttributes {
+  id?: string
+  userId: string
+  balance: number
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+export interface WalletTransactionAttributes {
+  id?: string
+  userId: string
+  walletId: string
+  type: "CREDIT" | "DEBIT"
+  amount: number
+  status?: "pending" | "successful" | "failed" | "reversed"
+  flutterwaveRef?: string | null // flw_ref from Flutterwave
+  txRef: string // Your internal transaction reference
+  paymentMethod?: string | null
+  from?: string | null // Source of the transaction (e.g., payment method, user)
+  to?: string | null // Destination of the transaction (e.g., payment method, user
+  currency: string
+  notes?: string | null
+  completedAt?: Date | null
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+// New type for Watchlist
+export interface WatchlistAttributes {
+  id?: string
+  userId: string
+  marketId: string
+  addedAt?: Date
+  createdAt?: Date
+  updatedAt?: Date
+  market?: MarketAttributes // Optional association to Market
 }

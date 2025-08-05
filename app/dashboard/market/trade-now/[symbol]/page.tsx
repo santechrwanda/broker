@@ -5,46 +5,11 @@ import { toast } from "react-toastify"
 import { FaCheckCircle, FaTimesCircle, FaInfoCircle } from "react-icons/fa"
 import LoadingSpinner from "@/components/common/loading-spinner"
 import Breadcrumb from "@/components/ui/breadcrum"
+import { useGetMarketBySecurityQuery } from "@/hooks/use-market"
+import { CURRENTCY } from "@/utility/constants"
 
 // Mock user ID for demonstration purposes
 const MOCK_USER_ID = "user-123"
-
-// Static Mock Data for Security and Company
-const MOCK_SECURITIES = [
-  {
-    id: "sec-1",
-    symbol: "BRALIRWA",
-    pricePerShare: 1200,
-    availableShares: 5000,
-    closingPrice: 1200,
-    previousClosingPrice: 1180,
-    change: "1.69%",
-    volume: 150000,
-    companyId: "comp-1",
-  },
-  {
-    id: "sec-2",
-    symbol: "MTNRWANDA",
-    pricePerShare: 250,
-    availableShares: 10000,
-    closingPrice: 250,
-    previousClosingPrice: 255,
-    change: "-1.96%",
-    volume: 200000,
-    companyId: "comp-2",
-  },
-  {
-    id: "sec-3",
-    symbol: "KCB",
-    pricePerShare: 3000,
-    availableShares: 2000,
-    closingPrice: 3000,
-    previousClosingPrice: 2950,
-    change: "1.69%",
-    volume: 50000,
-    companyId: "comp-3",
-  },
-]
 
 const MOCK_COMPANIES = [
   {
@@ -84,11 +49,19 @@ type BuyRequest = {
 
 export default function TradePage() {
   const params = useParams()
-  const symbol = params.symbol as string && "BRALIRWA";
+  const symbol = decodeURIComponent(params.symbol as string);
 
-  // Get static security data based on symbol
-  const security = MOCK_SECURITIES.find((s) => s.symbol === symbol)
+  // Fetch security info from API
+  const { data: marketData, isLoading: isMarketLoading, error: marketError } = useGetMarketBySecurityQuery(
+    { security: symbol, limit: 1 },
+    { skip: !symbol }
+  );
+
+  // Use the first result as the security info
+  const security = marketData && marketData.length > 0 ? marketData[0] : undefined;
   const company = MOCK_COMPANIES.find((c) => c.id === security?.companyId)
+
+  console.log("Security Data:", security);
 
   const [shares, setShares] = useState(0)
   const [currentStep, setCurrentStep] = useState<
@@ -108,6 +81,13 @@ export default function TradePage() {
       toast.error("Please enter a valid number of shares.")
       return
     }
+
+    // 💡 Check if volume is zero
+    if (security.volume === 0) {
+      toast.info("You can't buy shares. No available trading volume.")
+      return
+    }
+
     if (shares > security.availableShares) {
       toast.error("Not enough shares available.")
       return
@@ -169,11 +149,31 @@ export default function TradePage() {
     if (!security) {
       return <div className="text-center py-8 text-red-500">Security "{symbol}" not found.</div>
     }
-
-    const totalCost = shares * security.pricePerShare
+    const totalCost = shares * security?.closing
 
     switch (currentStep) {
       case "request":
+        if (security.volume === 0) {
+          return (
+            <div className="text-center py-10">
+              <FaInfoCircle className="mx-auto h-12 w-12 text-yellow-500 mb-4" />
+              <h2 className="text-xl font-semibold text-gray-700 mb-2">No Trading Volume</h2>
+              <p className="text-gray-600 mb-4">
+                This security is currently not available for trading. No shares are being traded at the moment.
+              </p>
+              <p className="text-gray-600 mb-6">
+                Please select a different security with available trading volume to proceed with your purchase.
+              </p>
+              <a
+                href="/dashboard/market"
+                className="inline-block px-6 py-3 bg-[#2288a4] text-white rounded hover:bg-[#004f64] transition"
+              >
+                Browse Other Securities
+              </a>
+            </div>
+          )
+        }
+
         return (
           <>
             <h2 className="text-xl text-gray-700 font-semibold mb-4">Request Shares</h2>
@@ -199,7 +199,7 @@ export default function TradePage() {
                   </p>
                 )}
               </div>
-              <p className="text-lg font-medium text-gray-800">Estimated Total: ${totalCost.toLocaleString()}</p>
+              <p className="text-lg font-medium text-gray-800">Estimated Total: {CURRENTCY} {totalCost?.toLocaleString?.() ?? "0"}</p>
               <button
                 onClick={handleRequestBuy}
                 disabled={isRequesting || shares <= 0 || shares > security.availableShares}
@@ -330,13 +330,15 @@ export default function TradePage() {
     }
   }
 
+  console.log("Security:", security)
+
   return (
     <div className="p-5 pt-0">
       <Breadcrumb
         items={[
-          { label: "Dashboard", path: "/dashboard" },
-          { label: "Market", path: "/dashboard/market" },
-          { label: "Trade Now", path: `/dashboard/market/trade-now/${symbol}` },
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Market", href: "/dashboard/market" },
+          { label: "Trade Now" },
         ]}
       />
       <h1 className="text-2xl text-[#004f64] font-bold mb-4">Trade {symbol}</h1>
@@ -376,41 +378,42 @@ export default function TradePage() {
 
           <div className="bg-white p-5 rounded shadow">
             <h2 className="text-xl text-gray-700 font-semibold mb-2">Security Info</h2>
-            {security ? (
+            {isMarketLoading ? (
+              <p className="text-gray-500">Loading security data...</p>
+            ) : marketError ? (
+              <p className="text-red-500">Failed to load security data.</p>
+            ) : security ? (
               <>
                 <p>
-                  <strong className="text-gray-500">Symbol:</strong> {security.symbol}
+                  <strong className="text-gray-500">Symbol:</strong> {symbol}
                 </p>
                 <p>
-                  <strong className="text-gray-500">Price per Share:</strong> ${security.pricePerShare.toLocaleString()}
+                  <strong className="text-gray-500">Price per Share:</strong> ${security.closing?.toLocaleString?.() ?? "0"}
                 </p>
                 <p>
-                  <strong className="text-gray-500">Available Shares:</strong>{" "}
-                  {security.availableShares.toLocaleString()}
+                  <strong className="text-gray-500">Available Shares:</strong> {security.availableShares?.toLocaleString?.() ?? "0"}
                 </p>
                 <p>
-                  <strong className="text-gray-500">Closing Price:</strong> ${security.closingPrice.toLocaleString()}
+                  <strong className="text-gray-500">Closing Price:</strong> ${security.closing?.toLocaleString?.() ?? "0"}
                 </p>
                 <p>
-                  <strong className="text-gray-500">Previous Close:</strong> $
-                  {security.previousClosingPrice.toLocaleString()}
+                  <strong className="text-gray-500">Previous Close:</strong> ${security.previous?.toLocaleString?.() ?? "0"}
                 </p>
                 <p>
                   <strong className="text-gray-500">Change:</strong>{" "}
                   <span
-                    className={`font-semibold ${
-                      security.change.startsWith("-")
-                        ? "text-red-500"
-                        : security.change === "0.00%"
-                          ? "text-gray-500"
-                          : "text-green-500"
-                    }`}
+                    className={`font-semibold ${security.change < 0
+                      ? "text-red-500"
+                      : security.change === 0
+                        ? "text-gray-500"
+                        : "text-green-500"
+                      }`}
                   >
-                    {security.change}
+                    {security.change?.toFixed?.(2) ?? "0"}%
                   </span>
                 </p>
                 <p>
-                  <strong className="text-gray-500">Volume:</strong> {security.volume.toLocaleString()}
+                  <strong className="text-gray-500">Volume:</strong> {security.volume?.toLocaleString?.() ?? "0"}
                 </p>
               </>
             ) : (

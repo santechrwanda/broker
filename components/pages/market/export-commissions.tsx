@@ -213,11 +213,7 @@ const ExportCommissions = () => {
   }
 
   if (commissionsLoading || usersLoading || companiesLoading) {
-    return (
-      <div className="flex bg-white p-6 shadow rounded-md flex-col md:flex-row md:items-center md:justify-between my-8">
-        <LoadingSpinner />
-      </div>
-    )
+    return null
   }
 
   if (commissionsError) {

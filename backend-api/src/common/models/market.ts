@@ -14,7 +14,6 @@ const Market = sequelize.define<MarketInstance>("Market", {
   security: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: "uniqueSecurityTimestamp", // Ensure unique entry per security per timestamp
     comment: "The security symbol or name (e.g., MTNR, BKGR)",
   },
   closing: {
@@ -45,7 +44,6 @@ const Market = sequelize.define<MarketInstance>("Market", {
   scrapedAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    unique: "uniqueSecurityTimestamp", // Ensure unique entry per security per timestamp
     defaultValue: DataTypes.NOW,
     comment: "Timestamp when the data was scraped",
   },
